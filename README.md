@@ -46,10 +46,10 @@ requirements
 ## 使用
 
 Windows客户端（控制端）
-（不想自己编译，就下载这个KVMoverUSB.exe文件）
+（不想自己编译，就下载这个USB-KVM.exe文件）
 1，第一次使用可能需要安装CH340的驱动。 参照官方说明安装。 
 [官网驱动安装指导视频](https://www.wch.cn/videos/ch340.html)
-如果安装成功可以在 … 中看到 COM口号码
+如果安装成功可以在 设备管理器 中看到 COM端口号
 
 【设别管理器 COM端口号】
 
