@@ -48,6 +48,7 @@ Screen size Y: 1080
 """
 # 默认设置 "COM_port: COM8, Screen size X: 1920, Screen size Y :1080"
     PATH = os.path.dirname(os.path.abspath(__file__))
+    return_read_config_hid=['COM0',100,100]
     if not os.path.exists(os.path.join(PATH, "config_hid.yaml")):
         with open(os.path.join(PATH, "config_hid.yaml"), "w") as f:
             f.write(default_config_hid)
