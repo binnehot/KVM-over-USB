@@ -28,16 +28,17 @@
 ## 软件
 由于硬件改变，软件需要适配。
 视频采集卡，即插即用，不用改东西。虚拟键鼠usb线，芯片方案都改了，原来的hid_def.py重新写了一遍，还有一个键盘码文件keyboard_ch9329code2Key.yaml。ch9329的python库可以直接pip安装。
+
 [CH9329 芯片串口通信协议]( https://www.wch.cn/uploads/file/20190508/1557278355473027.pdf) 想了解细节的可以看看，其实ch9329的python库都写好了，用就可以了。
 
 ## 编译
 需要的文件
 
 - 原项目ElluFX/KVM 项目v1.1的client文件夹
-- ./Client/hid_def.py 覆盖原文件
-- ./Client/data/HIDcode2KeyName.yaml 增加这个文件
+- ./client/hid_def.py 覆盖原文件
+- ./client/data/HIDcode2KeyName.yaml 增加这个文件
 
-_注意原项目有个文件夹名字需要确认一下，”./Client/data“中的”data“全部小写。_
+_注意原项目有个文件夹名字需要确认一下，”./client/data“中的”data“全部小写。_
 
 requirements
 参考原项目requirements.txt，再多三个库 numpy, pyserial 和 ch9329
