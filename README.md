@@ -66,6 +66,10 @@ Windows客户端（控制端）
 HDMI和USB，即插即用，不用安装驱动，不挑操作系统，BIOS设置也支持。
 注意：UI中 原项目留下来的某些功能需要原硬件支持，放在这里就没用了，比如，RGB灯，MCU重置…
 
+【应用例子，修改BIOS设定】
+
+![image](https://github.com/binnehot/KVM-over-USB/blob/main/image/4_BIOS_Gif.gif)
+
 ### 已知问题
 
 1.  键盘打字快了会出现重复字符，可以试一试用一个手指头打字，慢一点，或者等原作者优化原来的项目
