@@ -9,7 +9,7 @@
 [ElluIFX](https://github.com/ElluIFX)/[KVM-Card-Mini-PySide6](https://github.com/ElluIFX/KVM-Card-Mini-PySide6)
 
 ## 硬件
-三/四个常规小配件，不用做PCB板，花70+块钱就能搭出这个KVM over USB的方案。
+三/四个常规小配件，不用做PCB板，花70多块钱就能搭出这个KVM over USB的方案。
 
 1. 视频采集卡：理论上所有MS2130采集卡都可以  (40-90+元）
 2. CH9329虚拟键盘鼠标usb线：这是采用CH340+CH9329方案的usb转COM，再转USB模拟HID的线  (20元+）
