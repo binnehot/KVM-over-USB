@@ -16,13 +16,13 @@
 3. HDMI线：1080P分辨率，没有特别要求  (10元+）
 4. （usb3.0集线器）：如果电脑有两个usb口，可以省略。如果用usb2.0的集线器，也行。
 
-【硬件框图】
-![image](https://github.com/binnehot/KVM-over-USB/blob/main/image/1_HW_drawing.png)
-
-
 
 【硬件图】
 ![image](https://github.com/binnehot/KVM-over-USB/blob/main/image/0_HW_KVM_photo.JPG)
+
+
+【硬件框图】
+![image](https://github.com/binnehot/KVM-over-USB/blob/main/image/1_HW_drawing.png)
 
 
 ## 软件
