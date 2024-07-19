@@ -1,0 +1,857 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>842</width>
+    <height>582</height>
+   </rect>
+  </property>
+  <property name="focusPolicy">
+   <enum>Qt::StrongFocus</enum>
+  </property>
+  <property name="windowTitle">
+   <string>USB KVM Client</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QFrame" name="serverFrame">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>20</y>
+      <width>691</width>
+      <height>511</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Plain</enum>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_6">
+     <item>
+      <widget class="QFrame" name="serverSettingFrame">
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Plain</enum>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_5">
+        <property name="spacing">
+         <number>3</number>
+        </property>
+        <property name="topMargin">
+         <number>3</number>
+        </property>
+        <property name="rightMargin">
+         <number>3</number>
+        </property>
+        <property name="bottomMargin">
+         <number>3</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="label_4">
+          <property name="text">
+           <string>KVM Server Settings</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <spacer name="horizontalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout">
+            <property name="leftMargin">
+             <number>5</number>
+            </property>
+            <property name="rightMargin">
+             <number>3</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="label_2">
+              <property name="text">
+               <string>Host:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label">
+              <property name="text">
+               <string>Port:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_3">
+              <property name="text">
+               <string>Quality:</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_2">
+            <item>
+             <widget class="QLineEdit" name="kvmSetHostLine">
+              <property name="maximumSize">
+               <size>
+                <width>70</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>0.0.0.0</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="kvmSetPortSpin">
+              <property name="minimumSize">
+               <size>
+                <width>70</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximum">
+               <number>32768</number>
+              </property>
+              <property name="value">
+               <number>5000</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="kvmSetQualitySpin">
+              <property name="maximum">
+               <number>100</number>
+              </property>
+              <property name="value">
+               <number>95</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_3">
+            <property name="leftMargin">
+             <number>5</number>
+            </property>
+            <property name="rightMargin">
+             <number>3</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="label_5">
+              <property name="text">
+               <string>Video device:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_6">
+              <property name="text">
+               <string>Resolution:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_7">
+              <property name="text">
+               <string>Format:</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_4">
+            <item>
+             <widget class="QComboBox" name="kvmSetDeviceCombo">
+              <property name="minimumSize">
+               <size>
+                <width>100</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="sizeIncrement">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="baseSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="kvmSetResCombo"/>
+            </item>
+            <item>
+             <widget class="QComboBox" name="kvmSetFormatCombo"/>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_8">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Fixed</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>10</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnServerSwitch">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>60</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>60</width>
+              <height>60</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>35</width>
+              <height>35</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_9">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Fixed</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>10</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnServerSetAuth">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>60</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>60</width>
+              <height>60</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>35</width>
+              <height>35</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_10">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Fixed</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>10</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnServerOpenBrowser">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>60</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>60</width>
+              <height>60</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>35</width>
+              <height>35</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QTextEdit" name="serverLogEdit">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Plain</enum>
+       </property>
+       <property name="lineWidth">
+        <number>1</number>
+       </property>
+       <property name="autoFormatting">
+        <set>QTextEdit::AutoAll</set>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+       <property name="placeholderText">
+        <string>No log output</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>842</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_video_menu">
+    <property name="title">
+     <string>Device</string>
+    </property>
+    <addaction name="action_video_devices"/>
+    <addaction name="action_video_device_connect"/>
+    <addaction name="action_video_device_disconnect"/>
+    <addaction name="separator"/>
+    <addaction name="actionReload_MCU"/>
+    <addaction name="actionReload_Key_Mouse"/>
+    <addaction name="separator"/>
+    <addaction name="actionDark_theme"/>
+    <addaction name="actionRGB"/>
+    <addaction name="separator"/>
+    <addaction name="actionMinimize"/>
+    <addaction name="actionexit"/>
+   </widget>
+   <widget class="QMenu" name="menuKeyboard">
+    <property name="title">
+     <string>Keyboard</string>
+    </property>
+    <widget class="QMenu" name="menuShortcut_key">
+     <property name="title">
+      <string>Shortcut key</string>
+     </property>
+    </widget>
+    <addaction name="actionResetKeyboard"/>
+    <addaction name="separator"/>
+    <addaction name="menuShortcut_key"/>
+    <addaction name="actionCustomKey"/>
+    <addaction name="separator"/>
+    <addaction name="actionPaste_board"/>
+    <addaction name="actionQuick_paste"/>
+    <addaction name="separator"/>
+    <addaction name="actionSystem_hook"/>
+    <addaction name="separator"/>
+    <addaction name="actionIndicator_light"/>
+    <addaction name="actionNum_Keyboard"/>
+   </widget>
+   <widget class="QMenu" name="menuMouse">
+    <property name="title">
+     <string>Mouse</string>
+    </property>
+    <addaction name="actionResetMouse"/>
+    <addaction name="separator"/>
+    <addaction name="actionCapture_mouse"/>
+    <addaction name="actionRelease_mouse"/>
+    <addaction name="separator"/>
+    <addaction name="actionRelative_mouse"/>
+    <addaction name="actionHide_cursor"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionWindows_Device_Manager"/>
+    <addaction name="actionWindows_Audio_Setting"/>
+    <addaction name="actionOn_screen_Keyboard"/>
+    <addaction name="actionCalculator"/>
+    <addaction name="actionSnippingTool"/>
+    <addaction name="actionNotepad"/>
+   </widget>
+   <widget class="QMenu" name="menuVideo">
+    <property name="title">
+     <string>Video</string>
+    </property>
+    <addaction name="action_fullscreen"/>
+    <addaction name="action_Resize_window"/>
+    <addaction name="actionKeep_on_top"/>
+    <addaction name="separator"/>
+    <addaction name="actionKeep_ratio"/>
+    <addaction name="actionCapture_frame"/>
+    <addaction name="actionRecord_video"/>
+   </widget>
+   <widget class="QMenu" name="menuServer">
+    <property name="title">
+     <string>Server</string>
+    </property>
+    <addaction name="actionOpen_Server_Manager"/>
+    <addaction name="actionRefresh_device_list"/>
+    <addaction name="separator"/>
+    <addaction name="actionWeb_client"/>
+   </widget>
+   <widget class="QMenu" name="menuAbout">
+    <property name="title">
+     <string>About</string>
+    </property>
+    <addaction name="actionAuthor"/>
+    <addaction name="separator"/>
+    <addaction name="actionRaw_author"/>
+   </widget>
+   <addaction name="menu_video_menu"/>
+   <addaction name="menuVideo"/>
+   <addaction name="menuKeyboard"/>
+   <addaction name="menuMouse"/>
+   <addaction name="menuTools"/>
+   <addaction name="menuServer"/>
+   <addaction name="menuAbout"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar">
+   <property name="sizeGripEnabled">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <action name="action_video_devices">
+   <property name="text">
+    <string>Video devices</string>
+   </property>
+   <property name="shortcut">
+    <string/>
+   </property>
+  </action>
+  <action name="action_video_device_connect">
+   <property name="text">
+    <string>Connect</string>
+   </property>
+  </action>
+  <action name="action_video_device_disconnect">
+   <property name="text">
+    <string>Disconnect</string>
+   </property>
+  </action>
+  <action name="actionexit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionfullscreen">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Full screen</string>
+   </property>
+   <property name="shortcutVisibleInContextMenu">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionScreen_recording">
+   <property name="text">
+    <string>Screen recording</string>
+   </property>
+  </action>
+  <action name="actionResize_window">
+   <property name="text">
+    <string>Resize window</string>
+   </property>
+  </action>
+  <action name="actionResetKeyboard">
+   <property name="text">
+    <string>Reset</string>
+   </property>
+  </action>
+  <action name="actionResetMouse">
+   <property name="text">
+    <string>Reset</string>
+   </property>
+  </action>
+  <action name="action_quickkey_1">
+   <property name="text">
+    <string>Ctrl+Alt+Del</string>
+   </property>
+  </action>
+  <action name="action_quickkey_2">
+   <property name="text">
+    <string>Alt+Tab</string>
+   </property>
+  </action>
+  <action name="actionMinimize">
+   <property name="text">
+    <string>Minimize</string>
+   </property>
+  </action>
+  <action name="actionReload_Key_Mouse">
+   <property name="text">
+    <string>Reload Key/Mouse</string>
+   </property>
+  </action>
+  <action name="actionRelease_mouse">
+   <property name="text">
+    <string>Release mouse</string>
+   </property>
+  </action>
+  <action name="actionDisplay_System_Mouse">
+   <property name="text">
+    <string>Display system mouse</string>
+   </property>
+  </action>
+  <action name="actionCapture_mouse">
+   <property name="text">
+    <string>Capture mouse</string>
+   </property>
+  </action>
+  <action name="actionCustomKey">
+   <property name="text">
+    <string>Custom key</string>
+   </property>
+  </action>
+  <action name="actionq1">
+   <property name="text">
+    <string>q1</string>
+   </property>
+  </action>
+  <action name="actionq2">
+   <property name="text">
+    <string>q2</string>
+   </property>
+  </action>
+  <action name="actionq3">
+   <property name="text">
+    <string>q3</string>
+   </property>
+  </action>
+  <action name="actionq4">
+   <property name="text">
+    <string>q4</string>
+   </property>
+  </action>
+  <action name="actionq5">
+   <property name="text">
+    <string>q5</string>
+   </property>
+  </action>
+  <action name="actionq6">
+   <property name="text">
+    <string>q6</string>
+   </property>
+  </action>
+  <action name="actionq7">
+   <property name="text">
+    <string>q7</string>
+   </property>
+  </action>
+  <action name="actionq8">
+   <property name="text">
+    <string>q8</string>
+   </property>
+  </action>
+  <action name="actionq_8">
+   <property name="text">
+    <string>q8</string>
+   </property>
+  </action>
+  <action name="actionq9">
+   <property name="text">
+    <string>q9</string>
+   </property>
+  </action>
+  <action name="actionq10">
+   <property name="text">
+    <string>q10</string>
+   </property>
+  </action>
+  <action name="actionOn_screen_Keyboard">
+   <property name="text">
+    <string>On-screen Keyboard</string>
+   </property>
+  </action>
+  <action name="actionCalculator">
+   <property name="text">
+    <string>Calculator</string>
+   </property>
+  </action>
+  <action name="actionSnippingTool">
+   <property name="text">
+    <string>SnippingTool</string>
+   </property>
+  </action>
+  <action name="actionNotepad">
+   <property name="text">
+    <string>Notepad</string>
+   </property>
+  </action>
+  <action name="actionIndicator_light">
+   <property name="text">
+    <string>Indicator light</string>
+   </property>
+  </action>
+  <action name="actionReload_MCU">
+   <property name="text">
+    <string>Reload MCU</string>
+   </property>
+  </action>
+  <action name="action_fullscreen">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Fullscreen</string>
+   </property>
+  </action>
+  <action name="action_Resize_window">
+   <property name="text">
+    <string>Resize window</string>
+   </property>
+  </action>
+  <action name="actionKeep_ratio">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Keep aspect ratio</string>
+   </property>
+  </action>
+  <action name="actionKeep_on_top">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Always on top</string>
+   </property>
+  </action>
+  <action name="actionPaste_board">
+   <property name="text">
+    <string>Pasteboard</string>
+   </property>
+  </action>
+  <action name="actionHide_cursor">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Hide cursor</string>
+   </property>
+  </action>
+  <action name="actionCaps_Lock">
+   <property name="text">
+    <string>Caps Lock</string>
+   </property>
+  </action>
+  <action name="actionScroll_Lock">
+   <property name="text">
+    <string>Scroll Lock</string>
+   </property>
+  </action>
+  <action name="actionNum_Lock">
+   <property name="text">
+    <string>Num Lock</string>
+   </property>
+  </action>
+  <action name="actionDark_theme">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Dark theme</string>
+   </property>
+  </action>
+  <action name="actionCapture_frame">
+   <property name="text">
+    <string>Capture frame</string>
+   </property>
+  </action>
+  <action name="actionRGB">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>RGB Indicator</string>
+   </property>
+   <property name="toolTip">
+    <string>RGB Indicator</string>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+  </action>
+  <action name="actionQuick_paste">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Quick paste</string>
+   </property>
+   <property name="statusTip">
+    <string>Click Ctrl+Shift+Alt+V to quickly send your pasteboard</string>
+   </property>
+  </action>
+  <action name="actionWindows_Audio_Setting">
+   <property name="text">
+    <string>Windows Audio Settings</string>
+   </property>
+  </action>
+  <action name="actionWindows_Device_Manager">
+   <property name="text">
+    <string>Windows Device Manager</string>
+   </property>
+  </action>
+  <action name="actionNum_Keyboard">
+   <property name="text">
+    <string>Num Keyboard</string>
+   </property>
+  </action>
+  <action name="actionRecord_video">
+   <property name="text">
+    <string>Record video</string>
+   </property>
+  </action>
+  <action name="actionOpen_Server_Manager">
+   <property name="text">
+    <string>Open Server Manager</string>
+   </property>
+  </action>
+  <action name="actionSystem_hook">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>System hook</string>
+   </property>
+   <property name="statusTip">
+    <string>Blocks the system from responding to user input</string>
+   </property>
+  </action>
+  <action name="actionRefresh_device_list">
+   <property name="text">
+    <string>Refresh device list</string>
+   </property>
+  </action>
+  <action name="actionWeb_client">
+   <property name="text">
+    <string>Web client</string>
+   </property>
+  </action>
+  <action name="actionAuthor">
+   <property name="text">
+    <string>Author: @ElluIFX</string>
+   </property>
+  </action>
+  <action name="actionRaw_author">
+   <property name="text">
+    <string>Raw author: @Jackadminx</string>
+   </property>
+  </action>
+  <action name="actionRelative_mouse">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Relative mouse</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

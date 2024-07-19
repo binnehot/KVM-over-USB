@@ -1,0 +1,14 @@
+Flask-Cors==3.0.10
+Flask-HTTPAuth==4.8.0
+Flask==2.3.3
+PySide6-Addons==6.5.3
+PySide6-Essentials==6.5.3
+PySide6==6.5.3
+PyYAML==6.0
+Werkzeug==2.3.7
+flask-sock==0.6.0
+hidapi==0.13.1
+loguru==0.7.2
+pyWinhook==1.6.2
+pyqtdarktheme==2.1.0
+pywin32==306
