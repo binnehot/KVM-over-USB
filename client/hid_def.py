@@ -1,4 +1,3 @@
-# 
 #import hid #换了硬件，改用串口,删除了所有hid相关代码
 #
 from serial import Serial
@@ -24,6 +23,8 @@ VERBOSE = False
 COM_PORT=' '
 SCREEN_SIZE=[0,0]
 KEYBOARD_CH9329CODE2KEY = {}
+PATH = os.path.dirname(os.path.abspath(__file__))
+ARGV_PATH = os.path.dirname(os.path.abspath(sys.argv[0]))
 
 def set_debug(debug):
     global DEBUG
@@ -47,13 +48,12 @@ Screen size X: 1920
 Screen size Y: 1080
 """
 # 默认设置 "COM_port: COM8, Screen size X: 1920, Screen size Y :1080"
-    PATH = os.path.dirname(os.path.abspath(__file__))
     return_read_config_hid=['COM0',100,100]
-    if not os.path.exists(os.path.join(PATH, "config_hid.yaml")):
-        with open(os.path.join(PATH, "config_hid.yaml"), "w") as f:
+    if not os.path.exists(os.path.join(ARGV_PATH, "config_hid.yaml")):
+        with open(os.path.join(ARGV_PATH, "config_hid.yaml"), "w") as f:
             f.write(default_config_hid)
     else:
-        with open(os.path.join(PATH, "config_hid.yaml"), "r") as load_f:
+        with open(os.path.join(ARGV_PATH, "config_hid.yaml"), "r") as load_f:
             config_hid_yaml = yaml.safe_load(load_f)
 #        print ("line 57 config_hid.yaml file: ",config_hid_yaml)
         return_read_config_hid = [config_hid_yaml.get("COM_port"),config_hid_yaml.get("Screen size X"),config_hid_yaml.get("Screen size Y")]   
@@ -72,7 +72,6 @@ except SerialException:
 # 初始化HID设备设置
 def init_usb(vendor_id, usage_page):
     global KEYBOARD_CH9329CODE2KEY
-    PATH = os.path.dirname(os.path.abspath(__file__))
     try:
         with open(os.path.join(PATH, "data", "KEYBOARD_CH9329CODE2KEY.yaml"), "r") as load_f:
             KEYBOARD_CH9329CODE2KEY = yaml.safe_load(load_f)
@@ -347,8 +346,7 @@ class HID_Setting_Dialog(QDialog):
         new_config_hid = 'COM_port: ' + COM_PORT +'\n' + 'Screen size X: ' + str(SCREEN_SIZE[0]) + '\n' + 'Screen size Y: '+ str(SCREEN_SIZE[1]) + '\n'
         print ('line 347 new config_hid:', new_config_hid)
 
-        PATH = os.path.dirname(os.path.abspath(__file__))
-        with open(os.path.join(PATH, "config_hid.yaml"), "w", encoding="utf-8") as f:
+        with open(os.path.join(ARGV_PATH, "config_hid.yaml"), "w", encoding="utf-8") as f:
             f.write(new_config_hid)  
         self.close()
         return 0
