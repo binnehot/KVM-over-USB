@@ -49,7 +49,7 @@ Windows客户端（控制端）
 [官网驱动安装指导视频](https://www.wch.cn/videos/ch340.html)
 如果安装成功可以在 … 中看到 COM口号码
 
-【COM口号码】
+【设别管理器 COM端口号】
 
 ![image](https://github.com/binnehot/KVM-over-USB/blob/main/image/2_COM_port.png)
 
