@@ -12,10 +12,12 @@ def error_log(msg):
         f.write(f"{msg}\n")
 
 
-try:
-    from main import main
+if __name__ == "__main__":
+    try:
+        from main import main
 
-    main()
-except Exception:
-    error_log(traceback.format_exc())
-    sys.exit(1)
+        return_code = main()
+        sys.exit(return_code)
+    except Exception:
+        error_log(traceback.format_exc())
+        sys.exit(1)
