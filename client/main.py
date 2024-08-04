@@ -54,12 +54,10 @@ if not os.path.exists(os.path.join(ARGV_PATH, "config.yaml")):
     with open(os.path.join(ARGV_PATH, "config.yaml"), "w") as f:
         f.write(default_config)
 
-dark_theme = True
 translation = True
 try:
     with open(os.path.join(ARGV_PATH, "config.yaml"), "r") as load_f:
         config = yaml.safe_load(load_f)["config"]
-        dark_theme = config["dark_theme"]
         translation = config["translation"]
 except Exception:
     pass
@@ -154,26 +152,12 @@ def hsv_to_rgb(h: float, s: float, v: float) -> Tuple[int, int, int]:
     return 0, 0, 0
 
 
-def load_icon(name, dark_override=None) -> QIcon:
-    if dark_override is not None:
-        judge = dark_override
-    else:
-        judge = dark_theme
-    if judge:
-        return QIcon(f"{PATH}/icons/24_dark/{name}.png")
-    else:
-        return QIcon(f"{PATH}/icons/24_light/{name}.png")
+def load_icon(name) -> QIcon:
+    return QIcon(f"{PATH}/icons/24_light/{name}.png")
 
 
 def load_pixmap(name, dark_override=None) -> QPixmap:
-    if dark_override is not None:
-        judge = dark_override
-    else:
-        judge = dark_theme
-    if judge:
-        return QPixmap(f"{PATH}/icons/24_dark/{name}.png")
-    else:
-        return QPixmap(f"{PATH}/icons/24_light/{name}.png")
+    return QPixmap(f"{PATH}/icons/24_light/{name}.png")
 
 
 class MyPushButton(QPushButton):
@@ -389,7 +373,6 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             "quick_paste": True,
             "relative_mouse": False,
         }
-        self.set_checked(self.actionDark_theme, dark_theme)
 
         # 获取显示器分辨率大小
         self.desktop = QGuiApplication.primaryScreen()
@@ -492,7 +475,6 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         self.actionKeep_on_top.setIcon(load_icon("topmost"))
         self.actionPaste_board.setIcon(load_icon("paste"))
         self.actionHide_cursor.setIcon(load_icon("cursor"))
-        self.actionDark_theme.setIcon(load_icon("night"))
         self.actionCapture_frame.setIcon(load_icon("capture"))
         self.actionRecord_video.setIcon(load_icon("record"))
         self.actionRGB.setIcon(load_icon("RGB"))
@@ -597,7 +579,6 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         )
         self.actionWeb_client.triggered.connect(self.open_web_client)
 
-        self.actionDark_theme.triggered.connect(self.dark_theme_func)
         self.actionRGB.triggered.connect(self.RGB_func)
         self.paste_board_dialog.pushButtonFile.clicked.connect(
             self.paste_board_file_select
@@ -1436,7 +1417,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             if [s for s in shift_symbol if keysequence in s]:
                 keysequence = "Shift+" + keysequence
 
-            if len(re.findall("\+", keysequence)) == 0:  # 没有匹配到+号，不是组合键
+            if len(re.findall("\\+", keysequence)) == 0:  # 没有匹配到+号，不是组合键
                 self.shortcut_key_dialog.keySequenceEdit.setKeySequence(keysequence)
             else:
                 if keysequence != "+":
@@ -1615,10 +1596,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
 
     # 状态栏显示组合键状态
     def shortcut_status(self, s=[0, 0, 0]):
-        if dark_theme:
-            highlight_color = "color: white"
-        else:
-            highlight_color = "color: black"
+        highlight_color = "color: black"
         if (s[2] & 1) or (s[2] & 16):
             self.statusbar_lable1.setStyleSheet(highlight_color)
         else:
@@ -2071,22 +2049,6 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
                 not self.isActiveWindow() and self.status["init_ok"]
             ):  # 窗口失去焦点时重置键盘，防止卡键
                 self.reset_keymouse(1)
-
-    def dark_theme_func(self):
-        self.config["dark_theme"] = not self.config["dark_theme"]
-        self.set_checked(self.actionDark_theme, self.config["dark_theme"])
-        self.save_config()
-        info = QMessageBox(self)
-        info.setWindowTitle(self.tr("Dark theme"))
-        info.setText(
-            self.tr("Theme change will take affect at next start, restart now?")
-        )
-        info.Ok = info.addButton(self.tr("Restart"), QMessageBox.AcceptRole)
-        info.Cancel = info.addButton(self.tr("Not now"), QMessageBox.RejectRole)
-        info.exec()
-        if info.clickedButton() == info.Ok:
-            os.startfile(sys.argv[0])
-            sys.exit(0)
 
     def mouseButton_to_int(self, s: Qt.MouseButton):
         if s == Qt.LeftButton:
@@ -2771,13 +2733,6 @@ def clear_splash():
 
 def main():
     argv = sys.argv
-    if dark_theme:
-        argv += [
-            "-platform",
-            "windows:darkmode=2",
-            "--style",
-            "Windows",
-        ]  # or "Fusion" ?
     app = QApplication(argv)
     translator = QTranslator(app)
     if translation:
@@ -2788,16 +2743,6 @@ def main():
         if translator2.load(os.path.join(PATH, "qtbase_cn.qm")):
             app.installTranslator(translator2)
     myWin = MyMainWindow()
-    """
-    qdarktheme.setup_theme(
-        theme="dark" if dark_theme else "light",
-        custom_colors={
-            "[dark]": {
-                "background>base": "#1f2021",
-            }
-        },
-    )
-    """
     myWin.show()
     QTimer.singleShot(100, myWin.shortcut_status)
     clear_splash()

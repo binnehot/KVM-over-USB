@@ -380,7 +380,6 @@ class Ui_MainWindow(object):
         self.menu_video_menu.addAction(self.actionReload_MCU)
         self.menu_video_menu.addAction(self.actionReload_Key_Mouse)
         self.menu_video_menu.addSeparator()
-        self.menu_video_menu.addAction(self.actionDark_theme)
         self.menu_video_menu.addAction(self.actionRGB)
         self.menu_video_menu.addSeparator()
         self.menu_video_menu.addAction(self.actionMinimize)

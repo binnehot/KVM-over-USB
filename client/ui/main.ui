@@ -421,7 +421,6 @@
     <addaction name="actionReload_MCU"/>
     <addaction name="actionReload_Key_Mouse"/>
     <addaction name="separator"/>
-    <addaction name="actionDark_theme"/>
     <addaction name="actionRGB"/>
     <addaction name="separator"/>
     <addaction name="actionMinimize"/>
