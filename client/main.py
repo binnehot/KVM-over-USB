@@ -1,27 +1,26 @@
-import logging
 import os
+import sys
 import random
 import re
-import sys
 import tempfile
 import time
 from typing import Tuple
 
-import serial
-
-import hid_def
-import pythoncom
 import pyWinhook as pyHook
-import server_simple
+import pythoncom
+import serial
 import yaml
-from default import default_config
-from loguru import logger
 from PySide6 import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtMultimedia import *
 from PySide6.QtMultimediaWidgets import *
 from PySide6.QtWidgets import *
+from loguru import logger
+
+import hid_def
+import server_simple
+from default import default_config
 from server import FPSCounter, KVM_Server, add_auth_user, count_auth_users
 from ui import (
     device_setup_dialog_ui,
@@ -33,6 +32,13 @@ from ui import (
     controller_setup_ui,
 )
 
+PATH = os.path.dirname(os.path.abspath(__file__))
+ARGV_PATH = os.path.dirname(os.path.abspath(sys.argv[0]))
+
+translation = True
+config = dict()
+fake_std = None
+
 kb_buffer = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 mouse_buffer = [2, 0, 0, 0, 0, 0, 0, 0, 0]
 mouse_buffer_rel = [7, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -42,20 +48,20 @@ shift_symbol = [
     "+", "{", "}", "|", ":", '"',
     "<", ">", "?",
 ]  # fmt: skip
-PATH = os.path.dirname(os.path.abspath(__file__))
-ARGV_PATH = os.path.dirname(os.path.abspath(sys.argv[0]))
 
-if not os.path.exists(os.path.join(ARGV_PATH, "config.yaml")):
-    with open(os.path.join(ARGV_PATH, "config.yaml"), "w") as f:
-        f.write(default_config)
 
-translation = True
-try:
+def create_default_config_file():
+    if not os.path.exists(os.path.join(ARGV_PATH, "config.yaml")):
+        with open(os.path.join(ARGV_PATH, "config.yaml"), "w") as f:
+            f.write(default_config)
+
+
+def load_config_file():
+    global config
+    global translation
     with open(os.path.join(ARGV_PATH, "config.yaml"), "r") as load_f:
         config = yaml.safe_load(load_f)["config"]
         translation = config["translation"]
-except Exception:
-    pass
 
 
 def str_bool(b) -> str:
@@ -84,26 +90,22 @@ class FakeStdWriter:
         self.buffer = ""
 
 
-fake_std = FakeStdWriter()
+def init_global_logger():
+    global fake_std
+    fake_std = FakeStdWriter()
 
-# 屏蔽所有print
-if sys.argv[-1] != "debug":
+    if sys.argv[-1] != "debug":
+        sys.stdout = fake_std
+        sys.stderr = fake_std
 
-    def print(*args, **kwargs):
-        pass
-
-
-    sys.stdout = fake_std
-    sys.stderr = fake_std
-
-    logger.remove()
-    logger.add(
-        fake_std,
-        format="{time:YYYY-MM-DD HH:mm:ss.SSS} - {level} - {name} - {message}",  #:{function}:{line}
-        level="INFO",
-    )
-else:
-    hid_def.set_verbose(True)
+        logger.remove()
+        logger.add(
+            fake_std,
+            format="{time:YYYY-MM-DD HH:mm:ss.SSS} - {level} - {name} - {message}",  #:{function}:{line}
+            level="INFO",
+        )
+    else:
+        hid_def.set_verbose(True)
 
 
 def strB2Q(uchar):
@@ -1917,7 +1919,8 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             else:
                 cmd = CMD_HEAD + part + CMD_TAIL1
             cnt += len(part)
-            print(f"\rSend: {i} {cnt} {total}         ", end="")
+            # print(f"\rSend: {i} {cnt} {total}         ", end="")
+            logger.debug(f"\rSend: {i} {cnt} {total}")
             now = int(i / total * 100)
             next = int((i + PACKGE_SIZE) / total * 100)
             next = min(next, 100)
@@ -2732,6 +2735,9 @@ def clear_splash():
 
 
 def main():
+    init_global_logger()
+    create_default_config_file()
+    load_config_file()
     argv = sys.argv
     app = QApplication(argv)
     translator = QTranslator(app)
