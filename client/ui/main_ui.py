@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'main.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.5.3
+## Created by: Qt User Interface Compiler version 6.7.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -156,6 +156,8 @@ class Ui_MainWindow(object):
         self.actionRelative_mouse = QAction(MainWindow)
         self.actionRelative_mouse.setObjectName(u"actionRelative_mouse")
         self.actionRelative_mouse.setCheckable(True)
+        self.action_control_setup = QAction(MainWindow)
+        self.action_control_setup.setObjectName(u"action_control_setup")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.serverFrame = QFrame(self.centralwidget)
@@ -181,7 +183,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout.addItem(self.horizontalSpacer_3)
 
@@ -276,7 +278,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout.addLayout(self.verticalLayout_4)
 
-        self.horizontalSpacer_8 = QSpacerItem(10, 20, QSizePolicy.Fixed, QSizePolicy.Minimum)
+        self.horizontalSpacer_8 = QSpacerItem(10, 20, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout.addItem(self.horizontalSpacer_8)
 
@@ -291,7 +293,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout.addWidget(self.btnServerSwitch)
 
-        self.horizontalSpacer_9 = QSpacerItem(10, 20, QSizePolicy.Fixed, QSizePolicy.Minimum)
+        self.horizontalSpacer_9 = QSpacerItem(10, 20, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout.addItem(self.horizontalSpacer_9)
 
@@ -304,7 +306,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout.addWidget(self.btnServerSetAuth)
 
-        self.horizontalSpacer_10 = QSpacerItem(10, 20, QSizePolicy.Fixed, QSizePolicy.Minimum)
+        self.horizontalSpacer_10 = QSpacerItem(10, 20, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout.addItem(self.horizontalSpacer_10)
 
@@ -317,7 +319,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout.addWidget(self.btnServerOpenBrowser)
 
-        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout.addItem(self.horizontalSpacer_2)
 
@@ -340,7 +342,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 842, 21))
+        self.menubar.setGeometry(QRect(0, 0, 842, 26))
         self.menu_video_menu = QMenu(self.menubar)
         self.menu_video_menu.setObjectName(u"menu_video_menu")
         self.menuKeyboard = QMenu(self.menubar)
@@ -374,6 +376,7 @@ class Ui_MainWindow(object):
         self.menu_video_menu.addAction(self.action_video_device_connect)
         self.menu_video_menu.addAction(self.action_video_device_disconnect)
         self.menu_video_menu.addSeparator()
+        self.menu_video_menu.addAction(self.action_control_setup)
         self.menu_video_menu.addAction(self.actionReload_MCU)
         self.menu_video_menu.addAction(self.actionReload_Key_Mouse)
         self.menu_video_menu.addSeparator()
@@ -502,6 +505,7 @@ class Ui_MainWindow(object):
         self.actionAuthor.setText(QCoreApplication.translate("MainWindow", u"Author: @ElluIFX", None))
         self.actionRaw_author.setText(QCoreApplication.translate("MainWindow", u"Raw author: @Jackadminx", None))
         self.actionRelative_mouse.setText(QCoreApplication.translate("MainWindow", u"Relative mouse", None))
+        self.action_control_setup.setText(QCoreApplication.translate("MainWindow", u"Control setup", None))
         self.label_4.setText(QCoreApplication.translate("MainWindow", u"KVM Server Settings", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"Host:", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"Port:", None))

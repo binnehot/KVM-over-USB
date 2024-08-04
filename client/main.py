@@ -1,3 +1,4 @@
+import logging
 import os
 import random
 import re
@@ -5,6 +6,8 @@ import sys
 import tempfile
 import time
 from typing import Tuple
+
+import serial
 
 import hid_def
 import pythoncom
@@ -27,12 +30,13 @@ from ui import (
     numboard_ui,
     paste_board_ui,
     shortcut_key_ui,
+    controller_setup_ui,
 )
 
 """
 qdarktheme import after QT
 """
-import qdarktheme
+# import qdarktheme
 
 kb_buffer = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 mouse_buffer = [2, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -182,6 +186,17 @@ class MyPushButton(QPushButton):
         self.setIconSize(QSize(18, 18))
 
 
+class MyControllerSetupDialog(QDialog, controller_setup_ui.Ui_ControllerSetupDialog):
+    def __init__(self, parent=None):
+        super(MyControllerSetupDialog, self).__init__(parent)
+        self.setupUi(self)
+        self.setWindowFlags(Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint)
+        self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
+        self.line_edit_baud.setValidator(QIntValidator())
+        self.line_edit_screen_x_size.setValidator(QIntValidator())
+        self.line_edit_screen_y_size.setValidator(QIntValidator())
+
+
 class MyDeviceSetupDialog(QDialog, device_setup_dialog_ui.Ui_Dialog):
     def __init__(self, parent=None):
         super(MyDeviceSetupDialog, self).__init__(parent)
@@ -247,6 +262,9 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         super(MyMainWindow, self).__init__(parent)
         self.setupUi(self)
 
+        # MainWindow accept mouse events
+        self.setMouseTracking(True)
+
         self.camera = None
         self.camera_opened = False
         self.camera_info = None
@@ -256,6 +274,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
 
         # 子窗口
         self.device_setup_dialog = MyDeviceSetupDialog()
+        self.control_setup_dialog = MyControllerSetupDialog()
         self.shortcut_key_dialog = MyShortcutKeyDialog()
         self.paste_board_dialog = MyPasteBoardDialog()
         self.indicator_dialog = MyIndicatorDialog()
@@ -338,6 +357,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             self.video_record_config = self.configfile["video_record_config"]
             self.video_config = self.configfile["video_config"]
             self.audio_config = self.configfile["audio_config"]
+            self.controller_config = self.configfile["controller_config"]
             self.fullscreen_key = getattr(Qt, f'Key_{self.config["fullscreen_key"]}')
             self.relative_mouse_speed = self.config["relative_mouse_speed"]
             if self.config["mouse_report_freq"] != 0:
@@ -379,6 +399,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         # 窗口图标
         self.setWindowIcon(QIcon(f"{PATH}/icons/icon.ico"))
         self.device_setup_dialog.setWindowIcon(load_icon("import"))
+        self.control_setup_dialog.setWindowIcon(load_icon("import"))
         self.shortcut_key_dialog.setWindowIcon(load_icon("keyboard-settings-outline"))
         self.paste_board_dialog.setWindowIcon(load_icon("paste"))
         self.indicator_dialog.setWindowIcon(load_icon("capslock"))
@@ -500,6 +521,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         self.videoWidget.children()[0].setMouseTracking(True)
         self.videoWidget.hide()
 
+
         s_format = QSurfaceFormat.defaultFormat()
         s_format.setSwapInterval(0)
         QSurfaceFormat.setDefaultFormat(s_format)
@@ -525,6 +547,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             lambda: self.set_device(False)
         )
         self.action_video_devices.triggered.connect(self.device_config)
+        self.action_control_setup.triggered.connect(self.controller_setup)
         self.actionCustomKey.triggered.connect(self.shortcut_key_func)
         self.actionReload_Key_Mouse.triggered.connect(lambda: self.reset_keymouse(4))
         self.actionMinimize.triggered.connect(self.window_minimized)
@@ -632,9 +655,9 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         self.check_device_timer.timeout.connect(self.check_device_status)
         self.check_device_timer.start(1000)
 
+        # hid_def.current_screen_size.update_screen_size(self.video_config["resolution_X"],
+        #                                               self.video_config["resolution_Y"])
         self.reset_keymouse(4)
-
-        # self.setMouseTracking(True)
 
         self.mouse_scroll_timer = QTimer()
         self.mouse_scroll_timer.timeout.connect(self.mouse_scroll_stop)
@@ -901,6 +924,33 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             self.save_config()
         except Exception as e:
             logger.error(e)
+
+    # 控制器设置
+    def controller_setup(self):
+        if os.name == 'nt':  # sys.platform == 'win32':
+            from serial.tools.list_ports_windows import comports as list_comports
+        elif os.name == 'posix':
+            from serial.tools.list_ports_posix import comports as list_comports
+        else:
+            raise ImportError("Sorry: no implementation for your platform ('{}') available".format(os.name))
+        self.control_setup_dialog.combobox_com_port.clear()
+        port_info_list: serial.tools.list_ports.ListPortInfo = list_comports(include_links=False)
+        for port_info in port_info_list:
+            self.control_setup_dialog.combobox_com_port.addItem(port_info.name)
+        self.control_setup_dialog.label_screen_x = self.video_config["resolution_X"]
+        self.control_setup_dialog.label_screen_y = self.video_config["resolution_Y"]
+        dialog_return_code = self.control_setup_dialog.exec()
+        if dialog_return_code == 1:
+            # 用户按下确定
+            self.controller_config["controller_port"] = self.control_setup_dialog.combobox_com_port.currentText()
+            self.controller_config["controller_screen_x"] = self.control_setup_dialog.line_edit_screen_x_size.text()
+            self.controller_config["controller_screen_y"] = self.control_setup_dialog.line_edit_screen_y_size.text()
+            self.save_config()
+            self.reset_keymouse(4)
+            pass
+        else:
+            # 用户按下取消
+            pass
 
     # 获取采集卡分辨率
     def update_device_info(self):
@@ -1289,7 +1339,13 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             elif hidinfo == 0:
                 self.device_event_handle("hid_ok")
         elif s == 4:  # hid
-            hid_code = hid_def.init_usb(hid_def.vendor_id, hid_def.usage_page)
+            hid_code = hid_def.init_usb(
+                self.controller_config["controller_port"],
+                self.controller_config["controller_baud"],
+                self.controller_config["controller_screen_x"],
+                self.controller_config["controller_screen_y"]
+            )
+
             if hid_code == 0:
                 self.device_event_handle("hid_init_ok")
                 if self.status["mouse_capture"]:
@@ -2137,6 +2193,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
     _last_mouse_pos = None
 
     def mouseMoveEvent(self, event):
+        super(QMainWindow, self).mouseMoveEvent(event)
         if self.ignore_event:
             return
         p = event.position().toPoint()
@@ -2731,6 +2788,7 @@ def main():
         if translator2.load(os.path.join(PATH, "qtbase_cn.qm")):
             app.installTranslator(translator2)
     myWin = MyMainWindow()
+    """
     qdarktheme.setup_theme(
         theme="dark" if dark_theme else "light",
         custom_colors={
@@ -2739,6 +2797,7 @@ def main():
             }
         },
     )
+    """
     myWin.show()
     QTimer.singleShot(100, myWin.shortcut_status)
     clear_splash()

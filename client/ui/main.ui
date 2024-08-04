@@ -248,6 +248,7 @@
             </property>
             <property name="font">
              <font>
+              <weight>50</weight>
               <bold>false</bold>
              </font>
             </property>
@@ -294,6 +295,7 @@
             </property>
             <property name="font">
              <font>
+              <weight>50</weight>
               <bold>false</bold>
              </font>
             </property>
@@ -340,6 +342,7 @@
             </property>
             <property name="font">
              <font>
+              <weight>50</weight>
               <bold>false</bold>
              </font>
             </property>
@@ -403,7 +406,7 @@
      <x>0</x>
      <y>0</y>
      <width>842</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_video_menu">
@@ -414,6 +417,7 @@
     <addaction name="action_video_device_connect"/>
     <addaction name="action_video_device_disconnect"/>
     <addaction name="separator"/>
+    <addaction name="action_control_setup"/>
     <addaction name="actionReload_MCU"/>
     <addaction name="actionReload_Key_Mouse"/>
     <addaction name="separator"/>
@@ -849,6 +853,11 @@
    </property>
    <property name="text">
     <string>Relative mouse</string>
+   </property>
+  </action>
+  <action name="action_control_setup">
+   <property name="text">
+    <string>Control setup</string>
    </property>
   </action>
  </widget>
