@@ -32,16 +32,11 @@
 [CH9329 芯片串口通信协议]( https://www.wch.cn/uploads/file/20190508/1557278355473027.pdf) 想了解细节的可以看看，其实ch9329的python库都写好了，用就可以了。
 
 ## 编译
-需要的文件
-
-- 原项目ElluFX/KVM 项目v1.1的client文件夹
-- ./client/hid_def.py 覆盖原文件
-- ./client/data/HIDcode2KeyName.yaml 增加这个文件
-
-_注意原项目有个文件夹名字需要确认一下，”./client/data“中的”data“全部小写。_
 
 requirements
-参考原项目requirements.txt，再多三个库 numpy, pyserial 和 ch9329
+参考项目中的requirements.txt
+
+支持并且推荐使用poetry来安装管理依赖
 
 ## 使用
 
