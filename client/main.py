@@ -1,7 +1,7 @@
 import os
-import sys
 import random
 import re
+import sys
 import tempfile
 import time
 from typing import Tuple
@@ -10,7 +10,9 @@ import pyWinhook as pyHook
 import pythoncom
 import serial
 import yaml
-from PySide6 import *
+
+# from PySide6 import *
+import PySide6
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtMultimedia import *
@@ -2738,6 +2740,8 @@ def main():
     init_global_logger()
     create_default_config_file()
     load_config_file()
+    logger.debug(f"Python version : {sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}")
+    logger.debug("PySide6 version : {}", PySide6.QtCore.qVersion())
     argv = sys.argv
     app = QApplication(argv)
     translator = QTranslator(app)
