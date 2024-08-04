@@ -61,12 +61,13 @@ Windows客户端（控制端）
 
 【HID setting】
 
-![image](https://github.com/binnehot/KVM-over-USB/blob/main/image/3_COM_setting.png)
+![image](https://github.com/wevsty/KVM-over-USB/blob/cleanup/image/3.1_COM_setting.png)
+![image](https://github.com/wevsty/KVM-over-USB/blob/cleanup/image/3.2_COM_setting.png)
 
 
 服务端（被控制端）
 HDMI和USB，即插即用，不用安装驱动，不挑操作系统，BIOS设置也支持。
-注意：UI中 原项目留下来的某些功能需要原硬件支持，放在这里就没用了，比如，RGB灯，MCU重置…
+注意：UI中MCU重置功能已经进行简单实现，RGB灯功能，暂时未有实现。
 
 【应用例子，修改BIOS设定】
 
@@ -74,7 +75,9 @@ HDMI和USB，即插即用，不用安装驱动，不挑操作系统，BIOS设置
 
 ### 已知问题
 
-1.  键盘打字快了会出现重复字符，可以试一试用一个手指头打字，慢一点，或者等原作者优化原来的项目
+~~ 1.  键盘打字快了会出现重复字符，可以试一试用一个手指头打字，慢一点，或者等原作者优化原来的项目 ~~
+该问题已经修复
+
 2.  鼠标移动和点击有点慢，需要练习和技巧，这也需要原作者优化原来的项目，或者接一个无线鼠标
 
 
