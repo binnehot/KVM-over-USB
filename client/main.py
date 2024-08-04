@@ -456,6 +456,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         self.action_video_device_disconnect.setIcon(load_icon("video-off"))
         self.actionMinimize.setIcon(load_icon("window-minimize"))
         self.actionexit.setIcon(load_icon("window-close"))
+        self.action_control_setup.setIcon(load_icon("import"))
         self.actionReload_MCU.setIcon(load_icon("reload"))
         self.actionReload_Key_Mouse.setIcon(load_icon("reload"))
         self.action_fullscreen.setIcon(load_icon("fullscreen"))
