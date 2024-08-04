@@ -52,9 +52,7 @@ Windows客户端（控制端）
 
 
 2，配置COM端口。
-默认端口COM9，如果需要更改端口，请在HID setting对话框更改， 或者编辑文件 config_hid.yaml
-
-【HID setting】
+默认端口COM5，如果需要更改端口，请参考图片
 
 ![image](https://github.com/wevsty/KVM-over-USB/blob/cleanup/image/3.1_COM_setting.png)
 ![image](https://github.com/wevsty/KVM-over-USB/blob/cleanup/image/3.2_COM_setting.png)
