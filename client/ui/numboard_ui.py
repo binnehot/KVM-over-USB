@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'numboard.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.4.2
+## Created by: Qt User Interface Compiler version 6.7.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -124,7 +124,7 @@ class Ui_Dialog(object):
 
         self.pushButton_17 = QPushButton(Dialog)
         self.pushButton_17.setObjectName(u"pushButton_17")
-        sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.pushButton_17.sizePolicy().hasHeightForWidth())
