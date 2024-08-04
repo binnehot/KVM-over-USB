@@ -33,11 +33,6 @@ from ui import (
     controller_setup_ui,
 )
 
-"""
-qdarktheme import after QT
-"""
-# import qdarktheme
-
 kb_buffer = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 mouse_buffer = [2, 0, 0, 0, 0, 0, 0, 0, 0]
 mouse_buffer_rel = [7, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -70,7 +65,7 @@ def str_bool(b) -> str:
         return "启用" if b else "禁用"
 
 
-class Fake_StdWriter:
+class FakeStdWriter:
     def __init__(self, *args, **kwargs):
         self.buffer = ""
         self.callback = None
@@ -89,7 +84,7 @@ class Fake_StdWriter:
         self.buffer = ""
 
 
-fake_std = Fake_StdWriter()
+fake_std = FakeStdWriter()
 
 # 屏蔽所有print
 if sys.argv[-1] != "debug":
