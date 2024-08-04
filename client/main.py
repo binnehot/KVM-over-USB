@@ -2737,11 +2737,11 @@ def main():
     app = QApplication(argv)
     translator = QTranslator(app)
     if translation:
-        if translator.load(os.path.join(PATH, "trans_cn.qm")):
+        if translator.load(os.path.join(PATH, "translate", "trans_cn.qm")):
             app.installTranslator(translator)
     translator2 = QTranslator(app)
     if translation:
-        if translator2.load(os.path.join(PATH, "qtbase_cn.qm")):
+        if translator2.load(os.path.join(PATH, "translate", "qtbase_cn.qm")):
             app.installTranslator(translator2)
     myWin = MyMainWindow()
     myWin.show()
