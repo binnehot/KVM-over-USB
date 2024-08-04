@@ -159,6 +159,8 @@ def hid_report_key(buffer_key):
 
 
 def hid_report_key_presskey(buffer_key, function_keys=[]):
+    if g_serial_connection is None:
+        return 0
     byte_as_hex = [hex(x).split('x')[-1] for x in list(buffer_key)]
     logger.debug(f"buffer_key : {byte_as_hex}")
     for i in range(5, len(buffer_key)):
@@ -211,6 +213,8 @@ def hid_report_mouse(buffer_mouse):
 
 
 def hid_report_mouse_move_to(buffer_mouse):
+    if g_serial_connection is None:
+        return 0
     x = ((buffer_mouse[5] & 0xFF) << 8) + buffer_mouse[4]
     xx = int(x / 0x7FFF * current_screen_size.x)
     y = ((buffer_mouse[7] & 0xFF) << 8) + buffer_mouse[6]
@@ -221,6 +225,8 @@ def hid_report_mouse_move_to(buffer_mouse):
 
 
 def hid_report_mouse_click(buffer_mouse):
+    if g_serial_connection is None:
+        return 0
     if buffer_mouse[3] == 1:
         mouse.click(g_serial_connection, 'left')
     elif buffer_mouse[3] == 2:
@@ -234,6 +240,8 @@ def hid_report_mouse_click(buffer_mouse):
 
 
 def hid_report_mouse_key_down(buffer_mouse):
+    if g_serial_connection is None:
+        return 0
     if buffer_mouse[3] == 1:
         mouse.press(g_serial_connection, 'left')
     elif buffer_mouse[3] == 2:
@@ -247,6 +255,8 @@ def hid_report_mouse_key_down(buffer_mouse):
 
 
 def hid_report_mouse_key_up(buffer_mouse):
+    if g_serial_connection is None:
+        return 0
     if buffer_mouse[3] == 1 | buffer_mouse[3] == 2 | buffer_mouse[3] == 4:
         time.sleep(random.uniform(0.1, 0.45))
         mouse.release(g_serial_connection)
@@ -256,6 +266,8 @@ def hid_report_mouse_key_up(buffer_mouse):
 
 
 def hid_report_mouse_move_rel(buffer_mouse_rel):
+    if g_serial_connection is None:
+        return 0
     x_hid = buffer_mouse_rel[4]
     y_hid = buffer_mouse_rel[5]
     x_hid -= 0xFF if x_hid > 127 else 0
@@ -266,6 +278,8 @@ def hid_report_mouse_move_rel(buffer_mouse_rel):
 
 
 def hid_report_mouse_wheel(buffer_wheel):
+    if g_serial_connection is None:
+        return 0
     if buffer_wheel == 1:
         mouse.wheel(g_serial_connection, 1)
     elif buffer_wheel == 255:
@@ -284,6 +298,8 @@ def hid_report_get_keyboard_light_status():
 
 
 def get_keyboard_info():
+    if g_serial_connection is None:
+        return 0
     cmd_get_info_packet = b"\x57" + b"\xab" + b"\x00" + b"\x01" + b"\x00" + b"\x03"
     g_serial_connection.write(cmd_get_info_packet)
     keyboard_info = g_serial_connection.readline()

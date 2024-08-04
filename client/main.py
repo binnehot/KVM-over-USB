@@ -919,14 +919,16 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         port_info_list: serial.tools.list_ports.ListPortInfo = list_comports(include_links=False)
         for port_info in port_info_list:
             self.control_setup_dialog.combobox_com_port.addItem(port_info.name)
-        self.control_setup_dialog.label_screen_x = self.video_config["resolution_X"]
-        self.control_setup_dialog.label_screen_y = self.video_config["resolution_Y"]
+        self.control_setup_dialog.line_edit_baud.setText(str(self.controller_config["controller_baud"]))
+        self.control_setup_dialog.label_screen_x = int(self.video_config["resolution_X"])
+        self.control_setup_dialog.label_screen_y = int(self.video_config["resolution_Y"])
         dialog_return_code = self.control_setup_dialog.exec()
         if dialog_return_code == 1:
             # 用户按下确定
             self.controller_config["controller_port"] = self.control_setup_dialog.combobox_com_port.currentText()
-            self.controller_config["controller_screen_x"] = self.control_setup_dialog.line_edit_screen_x_size.text()
-            self.controller_config["controller_screen_y"] = self.control_setup_dialog.line_edit_screen_y_size.text()
+            self.controller_config["controller_baud"] = int(self.control_setup_dialog.line_edit_baud.text())
+            self.controller_config["controller_screen_x"] = int(self.control_setup_dialog.line_edit_screen_x_size.text())
+            self.controller_config["controller_screen_y"] = int(self.control_setup_dialog.line_edit_screen_y_size.text())
             self.save_config()
             self.reset_keymouse(4)
             pass
