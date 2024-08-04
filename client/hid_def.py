@@ -1,27 +1,26 @@
 # import hid #换了硬件，改用串口,删除了所有hid相关代码
 #
-from serial import Serial
-from serial import SerialException
+import os
+import random
+import sys
+import time
+
+import yaml
 from ch9329 import keyboard
 from ch9329 import mouse
-from ch9329.config import get_product
-from ch9329.config import get_serial_number
-from ch9329.config import get_manufacturer
 from loguru import logger
-import os
-import sys
-import yaml
-import time
-import random
+from serial import Serial
+from serial import SerialException
 
 __DEBUG__ = False
 __VERBOSE__ = False
 KEYBOARD_CH9329CODE2KEY = {}
 PATH = os.path.dirname(os.path.abspath(__file__))
 ARGV_PATH = os.path.dirname(os.path.abspath(sys.argv[0]))
-serial_connection: Serial | None = None
-current_com_port: str = ""
-current_com_baud_rate: int = 9600
+g_serial_connection: Serial | None = None
+g_com_port: str = ""
+g_com_baud_rate: int = 9600
+g_key_dict: dict = {}
 
 
 class ScreenSize:
@@ -62,32 +61,32 @@ def load_keyboard_code_key():
 # 返回0为成功
 # 返回非0为失败
 def init_usb(controller_port: str, baud: int = 9600, screen_x: int = 1920, screen_y: int = 1080):
-    global serial_connection
+    global g_serial_connection
     load_keyboard_code_key()
     if __DEBUG__:
         logger.debug(f"init_usb({controller_port}, {baud}, {screen_x}, {screen_y})")
-    if serial_connection:
-        serial_connection.close()
-        serial_connection = None
+    if g_serial_connection:
+        g_serial_connection.close()
+        g_serial_connection = None
     try:
-        serial_connection = Serial(controller_port, baud, timeout=0.05)
+        g_serial_connection = Serial(controller_port, baud, timeout=0.1)
         current_screen_size.x = screen_x
         current_screen_size.y = screen_y
         logger.debug(f"serial port {controller_port} open succeed")
     except SerialException:
         logger.debug(f"serial port {controller_port} open failed")
-        serial_connection = None
+        g_serial_connection = None
 
-    if serial_connection is None:
+    if g_serial_connection is None:
         return 1
     else:
         return 0
 
 
 def check_connection() -> bool:
-    if serial_connection is None:
+    if g_serial_connection is None:
         return False
-    if not serial_connection.is_open:
+    if not g_serial_connection.is_open:
         return False
     # release_keyboard_or_mouse()
     return True
@@ -101,7 +100,8 @@ def hid_report(buffer=[], r_mode=False, report=0):
     buffer = buffer[-1:] + buffer[:-1]
     buffer[0] = 0
     if __VERBOSE__:
-        logger.debug(f"hid < {buffer}")
+        # logger.debug(f"hid < {buffer}")
+        pass
     match buffer[1]:
         case 1:
             hid_report_key(buffer)
@@ -113,7 +113,7 @@ def hid_report(buffer=[], r_mode=False, report=0):
         case 3:
             buffer_indicator = [3, 0, 0]
             buffer_indicator[2] = hid_report_get_keyboard_light_status()
-            logger.debug("Reporting the Keyboard indicator lights status: ", buffer_indicator[2])
+            logger.debug(f"Reporting the Keyboard indicator lights status: {buffer_indicator[2]}")
             return buffer_indicator
         case 4:
             logger.debug("Reset MCU(CH9329)")
@@ -123,18 +123,20 @@ def hid_report(buffer=[], r_mode=False, report=0):
             if ((buffer[5] == 30) | (buffer[3] == 30)) & (buffer[4] == 30):
                 release_keyboard_or_mouse("all")
             else:
-                logger.debug("Reset keyboard and mouse, code error")
+                logger.debug("Reset keyboard and mouse code error")
             return 0
         case _:
-            logger.debug("Unknown buffer number %x:", buffer[1])
+            logger.debug(f"Unknown buffer number : {buffer[1]}")
     return 0
 
 
 def hid_report_key(buffer_key):
     if buffer_key[1] == 1:
         if buffer_key[3] == 0:
+            logger.debug(f"buffer_key[3] == 0")
             hid_report_key_presskey(buffer_key)
         else:
+            logger.debug(f"buffer_key[3] != 0")
             function_keys = []
             if (buffer_key[3] & 1) or (buffer_key[3] & 16):
                 function_keys.append('ctrl')
@@ -148,22 +150,32 @@ def hid_report_key(buffer_key):
             function_keys = []
         if len(buffer_key) > 10:
             if buffer_key[9] == 43:
-                keyboard.press_and_release(serial_connection, 'tab')
+                keyboard.press_and_release(g_serial_connection, 'tab')
             if buffer_key[10] == 70:
-                keyboard.press_and_release(serial_connection, 'printscreen')
+                keyboard.press_and_release(g_serial_connection, 'printscreen')
     else:
-        logger.debug("buffer_key error: %x", buffer_key[1])
+        logger.debug(f"buffer_key error: {buffer_key[1]}", )
     return 0
 
 
 def hid_report_key_presskey(buffer_key, function_keys=[]):
-    #    for i in range(5,6):       # 避免按键连击的问题，尝试关闭for循环，没用。
-    for i in range(5, min(10, len(buffer_key))):
+    byte_as_hex = [hex(x).split('x')[-1] for x in list(buffer_key)]
+    logger.debug(f"buffer_key : {byte_as_hex}")
+    for i in range(5, len(buffer_key)):
         if buffer_key[i] == 0:
-            break
+            # 按键弹起
+            g_key_dict[i] = None
         else:
-            keyname = KEYBOARD_CH9329CODE2KEY.get(str(buffer_key[i]))  # 根据hid找keyname
-            keyboard.press_and_release(serial_connection, keyname, function_keys)
+            # 根据hid找keyname
+            keyname = KEYBOARD_CH9329CODE2KEY.get(str(buffer_key[i]))
+            # logger.debug(f"keyname : {keyname}")
+            if g_key_dict.get(i, None) is None:
+                # 按键首次按下
+                g_key_dict[i] = keyname
+                keyboard.press_and_release(g_serial_connection, keyname, function_keys)
+                logger.debug(f"keypress : {keyname}")
+            else:
+                pass
     return 0
 
 
@@ -194,7 +206,7 @@ def hid_report_mouse(buffer_mouse):
         if buffer_mouse[6] != 0:
             hid_report_mouse_wheel(buffer_mouse[6])
     else:
-        logger.debug("buffer_mouse error: %x", buffer_mouse[1])
+        logger.debug(f"buffer_mouse error: {buffer_mouse[1]}")
     return 0
 
 
@@ -203,33 +215,33 @@ def hid_report_mouse_move_to(buffer_mouse):
     xx = int(x / 0x7FFF * current_screen_size.x)
     y = ((buffer_mouse[7] & 0xFF) << 8) + buffer_mouse[6]
     yy = int(y / 0x7FFF * current_screen_size.y)
-    mouse.move(serial_connection, xx, yy, False, current_screen_size.x, current_screen_size.y)
-    logger.debug("mouse move to : %d %d", xx, yy)
+    mouse.move(g_serial_connection, xx, yy, False, current_screen_size.x, current_screen_size.y)
+    # logger.debug(f"mouse move to : {xx} {yy}")
     return 0
 
 
 def hid_report_mouse_click(buffer_mouse):
     if buffer_mouse[3] == 1:
-        mouse.click(serial_connection, 'left')
+        mouse.click(g_serial_connection, 'left')
     elif buffer_mouse[3] == 2:
-        mouse.click(serial_connection, 'right')
+        mouse.click(g_serial_connection, 'right')
     elif buffer_mouse[3] == 4:
-        mouse.click(serial_connection, 'middle')
+        mouse.click(g_serial_connection, 'middle')
     else:
-        logger.debug("unknown mouse button click: %x", buffer_mouse[3])
+        logger.debug(f"unknown mouse button click: {buffer_mouse[3]}")
         return 0
     return 0
 
 
 def hid_report_mouse_key_down(buffer_mouse):
     if buffer_mouse[3] == 1:
-        mouse.press(serial_connection, 'left')
+        mouse.press(g_serial_connection, 'left')
     elif buffer_mouse[3] == 2:
-        mouse.press(serial_connection, 'right')
+        mouse.press(g_serial_connection, 'right')
     elif buffer_mouse[3] == 4:
-        mouse.press(serial_connection, 'middle')
+        mouse.press(g_serial_connection, 'middle')
     else:
-        logger.debug("unknown mouse button press: %x", buffer_mouse[3])
+        logger.debug(f"unknown mouse button press: {buffer_mouse[3]}")
         return 0
     return 0
 
@@ -237,9 +249,9 @@ def hid_report_mouse_key_down(buffer_mouse):
 def hid_report_mouse_key_up(buffer_mouse):
     if buffer_mouse[3] == 1 | buffer_mouse[3] == 2 | buffer_mouse[3] == 4:
         time.sleep(random.uniform(0.1, 0.45))
-        mouse.release(serial_connection)
+        mouse.release(g_serial_connection)
     else:
-        logger.debug("unknown mouse button release: %x", buffer_mouse[3])
+        logger.debug(f"unknown mouse button release: {buffer_mouse[3]}", )
     return 0
 
 
@@ -248,18 +260,18 @@ def hid_report_mouse_move_rel(buffer_mouse_rel):
     y_hid = buffer_mouse_rel[5]
     x_hid -= 0xFF if x_hid > 127 else 0
     y_hid -= 0xFF if y_hid > 127 else 0
-    mouse.move(serial_connection, x_hid * 3, y_hid * 3, True, current_screen_size.x, current_screen_size.y)
-    logger.debug("mouse move rel %d %d", x_hid, y_hid)
+    mouse.move(g_serial_connection, x_hid * 3, y_hid * 3, True, current_screen_size.x, current_screen_size.y)
+    logger.debug(f"mouse move rel {x_hid} {y_hid}")
     return 0
 
 
 def hid_report_mouse_wheel(buffer_wheel):
     if buffer_wheel == 1:
-        mouse.wheel(serial_connection, 1)
+        mouse.wheel(g_serial_connection, 1)
     elif buffer_wheel == 255:
-        mouse.wheel(serial_connection, -1)
+        mouse.wheel(g_serial_connection, -1)
     else:
-        logger.debug("Incorrect buffer wheel value %d", buffer_wheel)
+        logger.debug(f"Incorrect buffer wheel value {buffer_wheel}", )
     return 0
 
 
@@ -273,34 +285,32 @@ def hid_report_get_keyboard_light_status():
 
 def get_keyboard_info():
     cmd_get_info_packet = b"\x57" + b"\xab" + b"\x00" + b"\x01" + b"\x00" + b"\x03"
-    serial_connection.write(cmd_get_info_packet)
-    keyboard_info = serial_connection.readline()
+    g_serial_connection.write(cmd_get_info_packet)
+    keyboard_info = g_serial_connection.readline()
     return keyboard_info.hex()
 
 
 def release_keyboard_or_mouse(release_type='key'):
-    if serial_connection is None:
+    if g_serial_connection is None:
         return 0
-    logger.debug('release %s', release_type)
+    logger.debug(f'release {release_type}')
     if release_type == 'key':
-        logger.debug('release key')
-        keyboard.release(serial_connection)
+        keyboard.release(g_serial_connection)
     elif release_type == 'mouse':
-        logger.debug('release mouse')
-        mouse.release(serial_connection)
+        mouse.release(g_serial_connection)
     elif release_type == 'all':
         logger.debug('release all')
-        keyboard.release(serial_connection)
-        mouse.release(serial_connection)
+        keyboard.release(g_serial_connection)
+        mouse.release(g_serial_connection)
     return 0
 
 
 def reset_mcu_ch9329():
     cmd_reset_packet = b"\x57" + b"\xab" + b"\x00" + b"\x0f" + b"\x00" + b"\x11"
-    serial_connection.write(cmd_reset_packet)
-    keyboard_info = serial_connection.readline()
+    g_serial_connection.write(cmd_reset_packet)
+    keyboard_info = g_serial_connection.readline()
     if len(keyboard_info) >= 6:
-        logger.debug('ch9329 reset command return: %x', keyboard_info[5])
+        logger.debug(f'ch9329 reset command return: {keyboard_info[5]}', )
         if keyboard_info[5] == 0:
             logger.debug('ch9329 reset succeed')
     return keyboard_info.hex()
