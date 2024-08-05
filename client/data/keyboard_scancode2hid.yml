@@ -106,3 +106,11 @@
    0x0036: 0xE5   # Right Shift
    0x0138: 0xE6   # Right Alt
    0x015C: 0xE7   # Right GUI
+   0xE048: 0x52   # Up (US layout)
+   0xE050: 0x51   # Down (US layout)
+   0xE04b: 0x50   # Left (US layout)
+   0xE04d: 0x4F   # Right (US layout)
+   0xE049: 0x52   # Up (US layout with Fn)
+   0xE051: 0x51   # Down (US layout with Fn)
+   0xE047: 0x50   # Left (US layout with Fn)
+   0xE04f: 0x4F   # Right (US layout with Fn)
