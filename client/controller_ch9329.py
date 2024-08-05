@@ -25,6 +25,7 @@ class Ch9329KeyboardAttachFunction:
     def trigger_keys(ser: Serial, keys: list, modifiers: List[Modifier] = []) -> None:
         press_keys = keys.copy()
         press_modifiers = modifiers.copy()
+        press_keys = list(set(press_keys))
         press_modifiers = list(set(press_modifiers))
         # Supports press to 6 normal buttons at the same time
         if len(press_keys) > 6:
