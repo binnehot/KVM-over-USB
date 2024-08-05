@@ -6,13 +6,12 @@ import tempfile
 import time
 from typing import Tuple
 
+# from PySide6 import *
+import PySide6
 import pyWinhook as pyHook
 import pythoncom
 import serial
 import yaml
-
-# from PySide6 import *
-import PySide6
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtMultimedia import *
@@ -106,8 +105,7 @@ def init_global_logger():
             format="{time:YYYY-MM-DD HH:mm:ss.SSS} - {level} - {name} - {message}",  #:{function}:{line}
             level="INFO",
         )
-    else:
-        hid_def.set_verbose(True)
+        hid_def.debug_mode(hid_def.DebugMode.FILTER_NONE)
 
 
 def strB2Q(uchar):
@@ -228,10 +226,10 @@ class HidThread(QThread):
 
     def __init__(self, parent=None):
         super(HidThread, self).__init__(parent)
-        self._hid_signal.connect(self.hid_report)
+        self._hid_signal.connect(self.hid_event)
 
-    def hid_report(self, buf):
-        hidinfo = hid_def.hid_report(buf)
+    def hid_event(self, buf):
+        hidinfo = hid_def.hid_event(buf)
         if hidinfo == 1 or hidinfo == 4:
             self._event_signal.emit("hid_error")
 
@@ -1295,7 +1293,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         if s == 1:  # keyboard
             for i in range(2, len(kb_buffer)):
                 kb_buffer[i] = 0
-            hidinfo = hid_def.hid_report(kb_buffer)
+            hidinfo = hid_def.hid_event(kb_buffer)
             if hidinfo == 1 or hidinfo == 4:
                 self.device_event_handle("hid_error")
             elif hidinfo == 0:
@@ -1304,7 +1302,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         elif s == 2:  # MCU
             self.set_ws2812b(255, 0, 0)
             self.qt_sleep(100)
-            hidinfo = hid_def.hid_report([4, 0])
+            hidinfo = hid_def.hid_event([4, 0])
             if hidinfo == 1 or hidinfo == 4:
                 self.device_event_handle("hid_error")
             elif hidinfo == 0:
@@ -1317,8 +1315,8 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
                 mouse_buffer[i] = 0
             for i in range(2, len(mouse_buffer_rel)):
                 mouse_buffer[i] = 0
-            hidinfo = hid_def.hid_report(mouse_buffer)
-            hidinfo = hid_def.hid_report(mouse_buffer_rel)
+            hidinfo = hid_def.hid_event(mouse_buffer)
+            hidinfo = hid_def.hid_event(mouse_buffer_rel)
             if hidinfo == 1 or hidinfo == 4:
                 self.device_event_handle("hid_error")
             elif hidinfo == 0:
@@ -1621,7 +1619,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             self.statusbar_lable4.setStyleSheet("color: grey")
 
     def update_indicatorLight(self) -> None:
-        reply = hid_def.hid_report([3, 0], True)
+        reply = hid_def.hid_event([3, 0], True)
         if reply == 1 or reply == 2 or reply == 3 or reply == 4:
             self.device_event_handle("hid_error")
             self.indicator_timer.stop()
@@ -2152,7 +2150,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         self.mouse_action_timer.stop()
 
     def hid_report(self, buf: list[int]):
-        hidinfo = hid_def.hid_report(buf)
+        hidinfo = hid_def.hid_event(buf)
         if hidinfo == 1 or hidinfo == 4:
             self.device_event_handle("hid_error")
 
