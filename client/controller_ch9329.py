@@ -81,6 +81,8 @@ class ControllerCh9329:
     def create_connection(self) -> bool:
         logger.debug(f"init_connection({self.controller_port}, {self.baud}, {self.screen_x}, {self.screen_y})")
         connection_created: bool = False
+        if self.controller_port == "":
+            return connection_created
         self.close_connection()
         with self.connection_mutex:
             try:
