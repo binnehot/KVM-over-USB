@@ -22,7 +22,7 @@ SELF_PATH = os.path.dirname(os.path.abspath(__file__))
 class Ch9329KeyboardAttachFunction:
 
     @staticmethod
-    def press_keys(ser: Serial, keys: list, modifiers: List[Modifier] = []) -> None:
+    def trigger_keys(ser: Serial, keys: list, modifiers: List[Modifier] = []) -> None:
         press_keys = keys.copy()
         press_modifiers = modifiers.copy()
         press_modifiers = list(set(press_modifiers))
@@ -36,19 +36,6 @@ class Ch9329KeyboardAttachFunction:
         logger.debug(f'press_keys {press_keys}, {press_modifiers}')
         if press_keys[0] != '' and len(press_modifiers) > 0:
             pass
-        keyboard.send(ser, (press_keys[0], press_keys[1], press_keys[2], press_keys[3], press_keys[4], press_keys[5]),
-                      press_modifiers)
-
-    @staticmethod
-    def release_keys(self, ser: Serial, keys: list, modifiers: List[Modifier] = []) -> None:
-        press_keys = keys.copy()
-        press_modifiers = modifiers.copy()
-        if len(press_keys) > 6:
-            press_keys = press_keys[0:5]
-        # len(keys) <= 6
-        else:
-            while len(press_keys) != 6:
-                press_keys.append("")
         keyboard.send(ser, (press_keys[0], press_keys[1], press_keys[2], press_keys[3], press_keys[4], press_keys[5]),
                       press_modifiers)
 
@@ -236,23 +223,13 @@ class ControllerCh9329:
             logger.debug(f"keyboard key release")
         return True
 
-    def keyboard_keys_press(self, keys: list, function_keys: list):
+    def keyboard_keys_trigger(self, keys: list, function_keys: list):
         with self.connection_mutex:
             if self.serial_connection is None:
                 return False
             if self.serial_connection.is_open is False:
                 return False
-            Ch9329KeyboardAttachFunction.press_keys(self.serial_connection, keys, function_keys)
-            logger.debug(f"keyboard keys press : {keys}")
-        return True
-
-    def keyboard_keys_release(self, keys: list, function_keys: list):
-        with self.connection_mutex:
-            if self.serial_connection is None:
-                return False
-            if self.serial_connection.is_open is False:
-                return False
-            Ch9329KeyboardAttachFunction.release_keys(self.serial_connection, keys, function_keys)
+            Ch9329KeyboardAttachFunction.trigger_keys(self.serial_connection, keys, function_keys)
             logger.debug(f"keyboard keys press : {keys}")
         return True
 
