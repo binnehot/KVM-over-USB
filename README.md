@@ -33,10 +33,11 @@
 
 ## 编译
 
-requirements
-参考项目中的requirements.txt
+1、参考项目中的 requirements.txt 或者 pyproject.toml 来安装所需要的 Python 依赖
 
-支持并且推荐使用poetry来安装管理依赖
+这里支持并且推荐使用 poetry 来安装管理依赖
+
+2、最后通过 compiler.ps1 来编译项目。
 
 ## 使用
 
