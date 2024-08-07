@@ -2054,20 +2054,19 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         )
         self.set_checked(self.actionKeep_on_top, self.status["topmost"])
 
-    # 窗口失焦事件
+    # 窗口事件
     def changeEvent(self, event):
-        try:  # 窗口未初始化完成时会触发一次事件
-            if self.status is None:
-                return
-        except AttributeError:
-            logger.debug("status Variable not initialized")
-        except Exception as e:
-            logger.error(e)
-        else:
-            if (
-                    not self.isActiveWindow() and self.status["init_ok"]
-            ):  # 窗口失去焦点时重置键盘，防止卡键
+        # 窗口失焦事件
+        if event.type() == QEvent.WindowDeactivate:
+            try:
+                if self.status is None:
+                    return
+            except AttributeError:
+                logger.debug("status Variable not initialized")
+            if not self.isActiveWindow() and self.status["init_ok"]:
+                # 窗口失去焦点时重置键盘，防止卡键
                 self.reset_keymouse(1)
+        # logger.debug(f"window event: {event}")
 
     def mouseButton_to_int(self, s: Qt.MouseButton):
         if s == Qt.LeftButton:
