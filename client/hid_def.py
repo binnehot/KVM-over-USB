@@ -126,7 +126,7 @@ def hid_keyboard_key_button_event(buffer):
             # 根据hid找keyname
             key_name = GLOBAL_CONTROLLER.convert_hid_key_code_to_ch9329_key_code(hid_key_code)
             keys.append(key_name)
-            # logger.debug(f"keyname : {keyname}")
+            # logger.debug(f"key_name : {key_name}")
     GLOBAL_CONTROLLER.keyboard_keys_trigger(keys, function_keys)
     function_keys.clear()
 
