@@ -109,7 +109,8 @@ def init_global_logger():
         logger.remove()
         logger.add(
             fake_std,
-            format="{time:YYYY-MM-DD HH:mm:ss.SSS} - {level} - {name} - {message}",  #:{function}:{line}
+            # :{function}:{line}
+            format="{time:YYYY-MM-DD HH:mm:ss.SSS} - {level} - {name} - {message}",
             level="INFO",
         )
         hid_def.debug_mode(hid_def.DebugMode.FILTER_NONE)
@@ -161,7 +162,7 @@ def load_icon(name) -> QIcon:
     return QIcon(f"{PATH}/icons/24_light/{name}.png")
 
 
-def load_pixmap(name, dark_override=None) -> QPixmap:
+def load_pixmap(name) -> QPixmap:
     return QPixmap(f"{PATH}/icons/24_light/{name}.png")
 
 
@@ -871,8 +872,8 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         wm_pos = self.geometry()
         wm_size = self.size()
         self.device_setup_dialog.move(
-            wm_pos.x() + wm_size.width() / 2 - self.device_setup_dialog.width() / 2,
-            wm_pos.y() + wm_size.height() / 2 - self.device_setup_dialog.height() / 2,
+            int(wm_pos.x() + wm_size.width() / 2 - self.device_setup_dialog.width() / 2),
+            int(wm_pos.y() + wm_size.height() / 2 - self.device_setup_dialog.height() / 2),
         )
         # 如果选择设备
         ret = self.device_setup_dialog.exec()
@@ -985,7 +986,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
                 fmt_list.append(fmt_str)
                 self.device_setup_dialog.comboBox_3.addItem(fmt_str)
 
-    def camera_error_occurred(self, error, string):
+    def camera_error_occurred(self, error, _string):
         error_s = (
                 f"Device: {self.camera_info.description()}\nReturned: {error}\n\n"
                 + self.tr("Device disconnected")
@@ -1975,6 +1976,9 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             key_code = self.keyboard_code["NUMLOCK"]
         elif key == 3:  # Scroll Lock
             key_code = self.keyboard_code["SCROLLLOCK"]
+        else:
+            logger.debug(f"lock_key_func: unknown key value {key}")
+            key_code = 0
         key_code = int(key_code, 16)
         self.update_kb_hid(key_code, True)
         self.qt_sleep(50)
@@ -2254,7 +2258,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             mouse_buffer[6] = y_hid >> 8
             self._new_mouse_report = 1
         else:
-            middle_pos = self.mapToGlobal(QPoint(self.width() / 2, self.height() / 2))
+            middle_pos = self.mapToGlobal(QPoint(int(self.width() / 2), int(self.height() / 2)))
             mouse_pos = QCursor.pos()
             if self._last_mouse_pos is not None:
                 self.rel_x += (
@@ -2765,9 +2769,9 @@ def main():
     if translation:
         if translator2.load(os.path.join(PATH, "translate", "qtbase_cn.qm")):
             app.installTranslator(translator2)
-    myWin = MyMainWindow()
-    myWin.show()
-    QTimer.singleShot(100, myWin.shortcut_status)
+    my_window = MyMainWindow()
+    my_window.show()
+    QTimer.singleShot(100, my_window.shortcut_status)
     clear_splash()
     return app.exec()
 
