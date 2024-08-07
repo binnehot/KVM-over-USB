@@ -9,7 +9,7 @@ from loguru import logger
 path = os.path.dirname(os.path.abspath(__file__))
 
 
-class handler(SimpleHTTPRequestHandler):
+class Handler(SimpleHTTPRequestHandler):
     def __init__(self, request, client_address, server, *, directory=...) -> None:
         super().__init__(request, client_address, server, directory=os.path.join(path, "web_s"))
 
@@ -25,7 +25,7 @@ def start_server(port=None):
         port = 5020
         while not check_port_available(port):
             port += 1
-    server = ThreadingHTTPServer(("127.0.0.1", port), handler)
+    server = ThreadingHTTPServer(("127.0.0.1", port), Handler)
     server_thread = th.Thread(target=server.serve_forever, daemon=True)
     server_thread.start()
     logger.info(f"Web client serving at http://127.0.0.1:{port}/")
