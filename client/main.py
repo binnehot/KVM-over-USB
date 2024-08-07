@@ -33,6 +33,13 @@ from ui import (
     controller_setup_ui,
 )
 
+if os.name == 'nt':  # sys.platform == 'win32':
+    from serial.tools.list_ports_windows import comports as list_comports
+elif os.name == 'posix':
+    from serial.tools.list_ports_posix import comports as list_comports
+else:
+    raise ImportError("Sorry: no implementation for your platform ('{}') available".format(os.name))
+
 PATH = os.path.dirname(os.path.abspath(__file__))
 ARGV_PATH = os.path.dirname(os.path.abspath(sys.argv[0]))
 
@@ -634,8 +641,11 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         self.check_device_timer.timeout.connect(self.check_device_status)
         self.check_device_timer.start(1000)
 
-        # hid_def.current_screen_size.update_screen_size(self.video_config["resolution_X"],
-        #                                               self.video_config["resolution_Y"])
+        # 检测com端口
+        ports: list[str] = self.detect_device_ports()
+        if len(ports) > 0:
+            # 获取最后一个com端口
+            self.controller_config["controller_port"] = ports[-1]
         self.reset_keymouse(4)
 
         self.mouse_scroll_timer = QTimer()
@@ -675,6 +685,8 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         if self.video_config["auto_connect"]:
             self.device_setup_dialog.checkBoxAutoConnect.setChecked(True)
             QTimer().singleShot(1000, lambda: self.set_device(True, center=True))
+        # 保存配置文件
+        self.save_config()
 
     code_remap = {
         "Rcontrol": 0x011D,
@@ -904,18 +916,22 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         except Exception as e:
             logger.error(e)
 
-    # 控制器设置
-    def controller_setup(self):
-        if os.name == 'nt':  # sys.platform == 'win32':
-            from serial.tools.list_ports_windows import comports as list_comports
-        elif os.name == 'posix':
-            from serial.tools.list_ports_posix import comports as list_comports
-        else:
-            raise ImportError("Sorry: no implementation for your platform ('{}') available".format(os.name))
-        self.control_setup_dialog.combobox_com_port.clear()
+    @staticmethod
+    def detect_device_ports() -> list[str]:
+        port_name_list: list[str] = []
         port_info_list: serial.tools.list_ports.ListPortInfo = list_comports(include_links=False)
         for port_info in port_info_list:
-            self.control_setup_dialog.combobox_com_port.addItem(port_info.name)
+            port_name_list.append(port_info.name)
+        port_info_list.sort()
+        return port_name_list
+
+    # 控制器设置
+    def controller_setup(self):
+        port_name_list = self.detect_device_ports()
+        self.control_setup_dialog.combobox_com_port.clear()
+        for port_name in port_name_list:
+            self.control_setup_dialog.combobox_com_port.addItem(port_name)
+
         self.control_setup_dialog.line_edit_baud.setText(str(self.controller_config["controller_baud"]))
         self.control_setup_dialog.label_screen_x = int(self.video_config["resolution_X"])
         self.control_setup_dialog.label_screen_y = int(self.video_config["resolution_Y"])
