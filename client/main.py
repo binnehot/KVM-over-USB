@@ -2062,7 +2062,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
                 if self.status is None:
                     return
             except AttributeError:
-                logger.debug("status Variable not initialized")
+                logger.debug("status not initialized")
             if not self.isActiveWindow() and self.status["init_ok"]:
                 # 窗口失去焦点时重置键盘，防止卡键
                 self.reset_keymouse(1)
