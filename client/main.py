@@ -1,5 +1,5 @@
+import argparse
 import os
-import random
 import re
 import sys
 import tempfile
@@ -7,10 +7,8 @@ import time
 from typing import Tuple
 
 # from PySide6 import *
-import PySide6
 import pyWinhook as pyHook
 import pythoncom
-import serial
 import yaml
 from PySide6.QtCore import *
 from PySide6.QtGui import *
@@ -19,7 +17,7 @@ from PySide6.QtMultimediaWidgets import *
 from PySide6.QtWidgets import *
 from loguru import logger
 
-import hid_def
+import hid_device
 from default import default_config
 from ui import (
     device_setup_dialog_ui,
@@ -29,6 +27,7 @@ from ui import (
     paste_board_ui,
     shortcut_key_ui,
     controller_setup_ui,
+    about_ui,
 )
 
 PATH = os.path.dirname(os.path.abspath(__file__))
@@ -36,7 +35,6 @@ ARGV_PATH = os.path.dirname(os.path.abspath(sys.argv[0]))
 
 translation = True
 config = dict()
-fake_std = None
 
 kb_buffer = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 mouse_buffer = [2, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -68,43 +66,6 @@ def str_bool(b) -> str:
         return str(b)
     else:
         return "启用" if b else "禁用"
-
-
-class FakeStdWriter:
-    def __init__(self, *args, **kwargs):
-        self.buffer = ""
-        self.callback = None
-
-    def write(self, data):
-        if isinstance(data, bytes):
-            data = data.decode("utf-8")
-        self.buffer += data
-        if self.callback is not None:
-            self.callback(self.buffer)
-
-    def flush(self):
-        pass
-
-    def clear(self):
-        self.buffer = ""
-
-
-def init_global_logger():
-    global fake_std
-    fake_std = FakeStdWriter()
-
-    if sys.argv[-1] != "debug":
-        sys.stdout = fake_std
-        sys.stderr = fake_std
-
-        logger.remove()
-        logger.add(
-            fake_std,
-            # :{function}:{line}
-            format="{time:YYYY-MM-DD HH:mm:ss.SSS} - {level} - {name} - {message}",
-            level="INFO",
-        )
-        hid_def.debug_mode(hid_def.DebugMode.FILTER_NONE)
 
 
 def strB2Q(uchar):
@@ -219,6 +180,15 @@ class MyNumKeyboardDialog(QDialog, numboard_ui.Ui_Dialog):
         self.setFixedWidth(self.width())
 
 
+class MyAboutDialog(QDialog, about_ui.Ui_AboutDialog):
+    def __init__(self, parent=None):
+        super(MyAboutDialog, self).__init__(parent)
+        self.setupUi(self)
+        self.text_edit_info.append(
+            "Python: {}.{}.{}".format(sys.version_info.major, sys.version_info.minor, sys.version_info.micro))
+        self.text_edit_info.append("PySide6: {}".format(qVersion()))
+
+
 class HidThread(QThread):
     _hid_signal = Signal(list)
     _event_signal = Signal(str)
@@ -228,7 +198,7 @@ class HidThread(QThread):
         self._hid_signal.connect(self.hid_event)
 
     def hid_event(self, buf):
-        hidinfo = hid_def.hid_event(buf)
+        hidinfo = hid_device.hid_event(buf)
         if hidinfo == 1 or hidinfo == 4:
             self._event_signal.emit("hid_error")
 
@@ -259,6 +229,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         self.paste_board_dialog = MyPasteBoardDialog()
         self.indicator_dialog = MyIndicatorDialog()
         self.numkeyboard_dialog = MyNumKeyboardDialog()
+        self.about_dialog = MyAboutDialog()
 
         self.shortcut_key_dialog.pushButtonSend.released.connect(
             lambda: self.shortcut_key_func(1)
@@ -382,6 +353,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         self.paste_board_dialog.setWindowIcon(load_icon("paste"))
         self.indicator_dialog.setWindowIcon(load_icon("capslock"))
         self.numkeyboard_dialog.setWindowIcon(load_icon("numkey"))
+        self.about_dialog.setWindowIcon(load_icon("python"))
 
         # 状态栏图标
         self.statusbar_lable1 = QLabel()
@@ -479,7 +451,8 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         self.actionNum_Keyboard.setIcon(load_icon("numkey"))
         self.actionSystem_hook.setIcon(load_icon("hook"))
         self.actionRelative_mouse.setIcon(load_icon("relative"))
-        self.actionAboutQt.setIcon(load_icon("python"))
+        self.actionAbout.setIcon(load_icon("python"))
+        self.actionAboutQt.setIcon(load_icon("qt"))
 
         if self.video_config["keep_aspect_ratio"]:
             self.set_checked(self.actionKeep_ratio, True)
@@ -566,13 +539,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         self.paste_board_dialog.pushButtonFile.clicked.connect(
             self.paste_board_file_select
         )
-
-        self.actionAuthor.triggered.connect(
-            lambda: QDesktopServices.openUrl(QUrl("https://github.com/ElluIFX"))
-        )
-        self.actionRaw_author.triggered.connect(
-            lambda: QDesktopServices.openUrl(QUrl("https://github.com/Jackadminx"))
-        )
+        self.actionAbout.triggered.connect(lambda: self.about_dialog.exec())
         self.actionAboutQt.triggered.connect(QApplication.aboutQt)
 
         self.device_setup_dialog.checkBoxAudio.setChecked(
@@ -618,7 +585,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
 
         if self.controller_config["controller_port"] == "auto":
             # 检测com端口
-            ports: list[str] = hid_def.detect_serial_ports()
+            ports: list[str] = hid_device.detect_serial_ports()
             if len(ports) > 0:
                 # 获取最后一个com端口
                 self.controller_config["controller_port"] = ports[-1]
@@ -882,7 +849,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
 
     # 控制器设置
     def controller_setup(self):
-        port_name_list = hid_def.detect_serial_ports()
+        port_name_list = hid_device.detect_serial_ports()
         self.controller_setup_dialog.combobox_com_port.clear()
         self.controller_setup_dialog.combobox_com_port.addItem(self.tr("auto"""))
         for port_name in port_name_list:
@@ -1255,7 +1222,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         if s == 1:  # keyboard
             for i in range(2, len(kb_buffer)):
                 kb_buffer[i] = 0
-            hidinfo = hid_def.hid_event(kb_buffer)
+            hidinfo = hid_device.hid_event(kb_buffer)
             if hidinfo == 1 or hidinfo == 4:
                 self.device_event_handle("hid_error")
             elif hidinfo == 0:
@@ -1264,7 +1231,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         elif s == 2:  # MCU
             self.set_ws2812b(255, 0, 0)
             self.qt_sleep(100)
-            hidinfo = hid_def.hid_event([4, 0])
+            hidinfo = hid_device.hid_event([4, 0])
             if hidinfo == 1 or hidinfo == 4:
                 self.device_event_handle("hid_error")
             elif hidinfo == 0:
@@ -1277,14 +1244,14 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
                 mouse_buffer[i] = 0
             for i in range(2, len(mouse_buffer_rel)):
                 mouse_buffer[i] = 0
-            hidinfo = hid_def.hid_event(mouse_buffer)
-            hidinfo = hid_def.hid_event(mouse_buffer_rel)
+            hidinfo = hid_device.hid_event(mouse_buffer)
+            hidinfo = hid_device.hid_event(mouse_buffer_rel)
             if hidinfo == 1 or hidinfo == 4:
                 self.device_event_handle("hid_error")
             elif hidinfo == 0:
                 self.device_event_handle("hid_ok")
         elif s == 4:  # hid
-            hid_code = hid_def.init_usb(
+            hid_code = hid_device.init_usb(
                 self.controller_config["controller_port"],
                 self.controller_config["controller_baud"],
                 self.controller_config["controller_screen_x"],
@@ -1537,7 +1504,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
     # 检查连接状态
     def check_device_status(self):
         if self.device_connected:
-            if not hid_def.check_connection():
+            if not hid_device.check_connection():
                 self.device_event_handle("device_disconnect")
         # if self.camera_opened:
         #     if self.camera.availability() != QMultimedia.Available:
@@ -1581,7 +1548,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             self.statusbar_lable4.setStyleSheet("color: grey")
 
     def update_indicatorLight(self) -> None:
-        reply = hid_def.hid_event([3, 0], True)
+        reply = hid_device.hid_event([3, 0], True)
         if reply == 1 or reply == 2 or reply == 3 or reply == 4:
             self.device_event_handle("hid_error")
             self.indicator_timer.stop()
@@ -2102,7 +2069,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         self.mouse_action_timer.stop()
 
     def hid_report(self, buf: list[int]):
-        hidinfo = hid_def.hid_event(buf)
+        hidinfo = hid_device.hid_event(buf)
         if hidinfo == 1 or hidinfo == 4:
             self.device_event_handle("hid_error")
 
@@ -2400,22 +2367,46 @@ def clear_splash():
             os.unlink(splash_filename)
 
 
+def debug_mode(mode: bool):
+    if mode is True:
+        hid_device.debug_mode(hid_device.DebugMode.FILTER_NONE)
+    else:
+        # 非debug模式屏蔽所有debug输出
+        logger.remove()
+        logger.add(
+            sys.stdout,
+            # :{function}:{line}
+            format="{time:YYYY-MM-DD HH:mm:ss.SSS} - {level} - {name} - {message}",
+            level="INFO",
+        )
+        hid_device.debug_mode(hid_device.DebugMode.FILTER_ALL)
+
+
+def command_line_parser():
+    parser = argparse.ArgumentParser(description='USB KVM Client')
+    parser.add_argument('--debug', action='store_true',
+                        default=False,
+                        help='Debug mode (default: disable)')
+
+    args = parser.parse_args()
+    debug_mode(args.debug)
+
+
 def main():
-    init_global_logger()
+    command_line_parser()
     create_default_config_file()
     load_config_file()
-    logger.debug(f"Python version : {sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}")
-    logger.debug("PySide6 version : {}", PySide6.QtCore.qVersion())
     argv = sys.argv
     app = QApplication(argv)
-    translator = QTranslator(app)
-    if translation:
-        if translator.load(os.path.join(PATH, "translate", "trans_cn.qm")):
+    locale = QLocale().system().name().lower()
+    translation_files: list[str] = []
+    if locale == 'zh_cn':
+        translation_files.append(os.path.join(PATH, "translate", "qtbase_zh_cn.qm"))
+        translation_files.append(os.path.join(PATH, "translate", "trans_zh_cn.qm"))
+    for file_path in translation_files:
+        translator = QTranslator(app)
+        if translator.load(file_path):
             app.installTranslator(translator)
-    translator2 = QTranslator(app)
-    if translation:
-        if translator2.load(os.path.join(PATH, "translate", "qtbase_cn.qm")):
-            app.installTranslator(translator2)
     my_window = MyMainWindow()
     my_window.show()
     QTimer.singleShot(100, my_window.shortcut_status)

@@ -102,11 +102,8 @@
     <property name="title">
      <string>About</string>
     </property>
+    <addaction name="actionAbout"/>
     <addaction name="actionAboutQt"/>
-    <addaction name="separator"/>
-    <addaction name="actionAuthor"/>
-    <addaction name="separator"/>
-    <addaction name="actionRaw_author"/>
    </widget>
    <addaction name="menu_video_menu"/>
    <addaction name="menuVideo"/>
@@ -372,20 +369,6 @@
     <string>Capture frame</string>
    </property>
   </action>
-  <action name="actionRGB">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>RGB Indicator</string>
-   </property>
-   <property name="toolTip">
-    <string>RGB Indicator</string>
-   </property>
-   <property name="whatsThis">
-    <string/>
-   </property>
-  </action>
   <action name="actionQuick_paste">
    <property name="checkable">
     <bool>true</bool>
@@ -417,11 +400,6 @@
     <string>Record video</string>
    </property>
   </action>
-  <action name="actionOpen_Server_Manager">
-   <property name="text">
-    <string>Open Server Manager</string>
-   </property>
-  </action>
   <action name="actionSystem_hook">
    <property name="checkable">
     <bool>true</bool>
@@ -431,26 +409,6 @@
    </property>
    <property name="statusTip">
     <string>Blocks the system from responding to user input</string>
-   </property>
-  </action>
-  <action name="actionRefresh_device_list">
-   <property name="text">
-    <string>Refresh device list</string>
-   </property>
-  </action>
-  <action name="actionWeb_client">
-   <property name="text">
-    <string>Web client</string>
-   </property>
-  </action>
-  <action name="actionAuthor">
-   <property name="text">
-    <string>Author: @ElluIFX</string>
-   </property>
-  </action>
-  <action name="actionRaw_author">
-   <property name="text">
-    <string>Raw author: @Jackadminx</string>
    </property>
   </action>
   <action name="actionRelative_mouse">
@@ -469,6 +427,11 @@
   <action name="actionAboutQt">
    <property name="text">
     <string>About Qt</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
    </property>
   </action>
  </widget>

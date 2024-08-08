@@ -13,6 +13,7 @@ elif os.name == "posix":
 else:
     raise ImportError("Sorry: no implementation for your platform {} available".format(os.name))
 
+
 class DebugMode(IntEnum):
     FILTER_NONE = auto()
     FILTER_HID = auto()
@@ -90,8 +91,9 @@ def hid_event(buffer: list, read_mode: bool = False):
             status_code, replay = hid_keyboard_key_event(buffer)
         case 4:
             if __DEBUG_MODE__ <= DebugMode.FILTER_HID:
-                logger.debug("hid_event: reset MCU")
-            GLOBAL_CONTROLLER.reset_controller()
+                logger.debug("hid_event: reload MCU")
+            GLOBAL_CONTROLLER.reset_connection()
+            # GLOBAL_CONTROLLER.reset_controller()
         case 5:
             if ((buffer[5] == 30) | (buffer[3] == 30)) & (buffer[4] == 30):
                 GLOBAL_CONTROLLER.release_devices_input('all')

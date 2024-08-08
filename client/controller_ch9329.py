@@ -74,9 +74,9 @@ class ControllerCh9329:
         try:
             with open(file_path, 'r') as load_f:
                 self.ch9329_code2key = yaml.safe_load(load_f)
-                logger.debug(f'load ch9329_code2key succeed')
+                # logger.debug('load ch9329_code2key succeed')
         except FileNotFoundError:
-            logger.debug(f'load ch9329_code2key failed')
+            logger.debug('load ch9329_code2key failed')
             sys.exit(1)
 
     def create_connection(self) -> bool:
@@ -111,6 +111,7 @@ class ControllerCh9329:
     def reset_connection(self):
         logger.debug(f'reset_connection')
         self.press_key_map.clear()
+        self.close_connection()
         self.create_connection()
 
     def random_interval(self) -> float:

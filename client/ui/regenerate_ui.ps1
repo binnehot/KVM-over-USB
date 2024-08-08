@@ -5,3 +5,4 @@ pyside6-uic main.ui -o main_ui.py
 pyside6-uic numboard.ui -o numboard_ui.py
 pyside6-uic paste_board.ui -o paste_board_ui.py
 pyside6-uic shortcut_key.ui -o shortcut_key_ui.py
+pyside6-uic about.ui -o about_ui.py
