@@ -16,11 +16,8 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QIcon, QImage, QKeySequence, QLinearGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
-from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QHBoxLayout,
-    QLabel, QLineEdit, QMainWindow, QMenu,
-    QMenuBar, QPushButton, QSizePolicy, QSpacerItem,
-    QSpinBox, QStatusBar, QTextEdit, QVBoxLayout,
-    QWidget)
+from PySide6.QtWidgets import (QApplication, QMainWindow, QMenu, QMenuBar,
+    QSizePolicy, QStatusBar, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -162,185 +159,6 @@ class Ui_MainWindow(object):
         self.actionAboutQt.setObjectName(u"actionAboutQt")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
-        self.serverFrame = QFrame(self.centralwidget)
-        self.serverFrame.setObjectName(u"serverFrame")
-        self.serverFrame.setGeometry(QRect(40, 20, 691, 511))
-        self.serverFrame.setFrameShape(QFrame.Shape.StyledPanel)
-        self.serverFrame.setFrameShadow(QFrame.Shadow.Plain)
-        self.verticalLayout_6 = QVBoxLayout(self.serverFrame)
-        self.verticalLayout_6.setObjectName(u"verticalLayout_6")
-        self.serverSettingFrame = QFrame(self.serverFrame)
-        self.serverSettingFrame.setObjectName(u"serverSettingFrame")
-        self.serverSettingFrame.setFrameShape(QFrame.Shape.StyledPanel)
-        self.serverSettingFrame.setFrameShadow(QFrame.Shadow.Plain)
-        self.verticalLayout_5 = QVBoxLayout(self.serverSettingFrame)
-        self.verticalLayout_5.setSpacing(3)
-        self.verticalLayout_5.setObjectName(u"verticalLayout_5")
-        self.verticalLayout_5.setContentsMargins(-1, 3, 3, 3)
-        self.label_4 = QLabel(self.serverSettingFrame)
-        self.label_4.setObjectName(u"label_4")
-        self.label_4.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.verticalLayout_5.addWidget(self.label_4)
-
-        self.horizontalLayout = QHBoxLayout()
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout.addItem(self.horizontalSpacer_3)
-
-        self.verticalLayout = QVBoxLayout()
-        self.verticalLayout.setObjectName(u"verticalLayout")
-        self.verticalLayout.setContentsMargins(5, -1, 3, -1)
-        self.label_2 = QLabel(self.serverSettingFrame)
-        self.label_2.setObjectName(u"label_2")
-
-        self.verticalLayout.addWidget(self.label_2)
-
-        self.label = QLabel(self.serverSettingFrame)
-        self.label.setObjectName(u"label")
-
-        self.verticalLayout.addWidget(self.label)
-
-        self.label_3 = QLabel(self.serverSettingFrame)
-        self.label_3.setObjectName(u"label_3")
-
-        self.verticalLayout.addWidget(self.label_3)
-
-
-        self.horizontalLayout.addLayout(self.verticalLayout)
-
-        self.verticalLayout_2 = QVBoxLayout()
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.kvmSetHostLine = QLineEdit(self.serverSettingFrame)
-        self.kvmSetHostLine.setObjectName(u"kvmSetHostLine")
-        self.kvmSetHostLine.setMaximumSize(QSize(70, 16777215))
-
-        self.verticalLayout_2.addWidget(self.kvmSetHostLine)
-
-        self.kvmSetPortSpin = QSpinBox(self.serverSettingFrame)
-        self.kvmSetPortSpin.setObjectName(u"kvmSetPortSpin")
-        self.kvmSetPortSpin.setMinimumSize(QSize(70, 0))
-        self.kvmSetPortSpin.setMaximum(32768)
-        self.kvmSetPortSpin.setValue(5000)
-
-        self.verticalLayout_2.addWidget(self.kvmSetPortSpin)
-
-        self.kvmSetQualitySpin = QSpinBox(self.serverSettingFrame)
-        self.kvmSetQualitySpin.setObjectName(u"kvmSetQualitySpin")
-        self.kvmSetQualitySpin.setMaximum(100)
-        self.kvmSetQualitySpin.setValue(95)
-
-        self.verticalLayout_2.addWidget(self.kvmSetQualitySpin)
-
-
-        self.horizontalLayout.addLayout(self.verticalLayout_2)
-
-        self.verticalLayout_3 = QVBoxLayout()
-        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.verticalLayout_3.setContentsMargins(5, -1, 3, -1)
-        self.label_5 = QLabel(self.serverSettingFrame)
-        self.label_5.setObjectName(u"label_5")
-
-        self.verticalLayout_3.addWidget(self.label_5)
-
-        self.label_6 = QLabel(self.serverSettingFrame)
-        self.label_6.setObjectName(u"label_6")
-
-        self.verticalLayout_3.addWidget(self.label_6)
-
-        self.label_7 = QLabel(self.serverSettingFrame)
-        self.label_7.setObjectName(u"label_7")
-
-        self.verticalLayout_3.addWidget(self.label_7)
-
-
-        self.horizontalLayout.addLayout(self.verticalLayout_3)
-
-        self.verticalLayout_4 = QVBoxLayout()
-        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
-        self.kvmSetDeviceCombo = QComboBox(self.serverSettingFrame)
-        self.kvmSetDeviceCombo.setObjectName(u"kvmSetDeviceCombo")
-        self.kvmSetDeviceCombo.setMinimumSize(QSize(100, 0))
-        self.kvmSetDeviceCombo.setSizeIncrement(QSize(0, 0))
-        self.kvmSetDeviceCombo.setBaseSize(QSize(0, 0))
-
-        self.verticalLayout_4.addWidget(self.kvmSetDeviceCombo)
-
-        self.kvmSetResCombo = QComboBox(self.serverSettingFrame)
-        self.kvmSetResCombo.setObjectName(u"kvmSetResCombo")
-
-        self.verticalLayout_4.addWidget(self.kvmSetResCombo)
-
-        self.kvmSetFormatCombo = QComboBox(self.serverSettingFrame)
-        self.kvmSetFormatCombo.setObjectName(u"kvmSetFormatCombo")
-
-        self.verticalLayout_4.addWidget(self.kvmSetFormatCombo)
-
-
-        self.horizontalLayout.addLayout(self.verticalLayout_4)
-
-        self.horizontalSpacer_8 = QSpacerItem(10, 20, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout.addItem(self.horizontalSpacer_8)
-
-        self.btnServerSwitch = QPushButton(self.serverSettingFrame)
-        self.btnServerSwitch.setObjectName(u"btnServerSwitch")
-        self.btnServerSwitch.setMinimumSize(QSize(60, 60))
-        self.btnServerSwitch.setMaximumSize(QSize(60, 60))
-        font = QFont()
-        font.setBold(False)
-        self.btnServerSwitch.setFont(font)
-        self.btnServerSwitch.setIconSize(QSize(35, 35))
-
-        self.horizontalLayout.addWidget(self.btnServerSwitch)
-
-        self.horizontalSpacer_9 = QSpacerItem(10, 20, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout.addItem(self.horizontalSpacer_9)
-
-        self.btnServerSetAuth = QPushButton(self.serverSettingFrame)
-        self.btnServerSetAuth.setObjectName(u"btnServerSetAuth")
-        self.btnServerSetAuth.setMinimumSize(QSize(60, 60))
-        self.btnServerSetAuth.setMaximumSize(QSize(60, 60))
-        self.btnServerSetAuth.setFont(font)
-        self.btnServerSetAuth.setIconSize(QSize(35, 35))
-
-        self.horizontalLayout.addWidget(self.btnServerSetAuth)
-
-        self.horizontalSpacer_10 = QSpacerItem(10, 20, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout.addItem(self.horizontalSpacer_10)
-
-        self.btnServerOpenBrowser = QPushButton(self.serverSettingFrame)
-        self.btnServerOpenBrowser.setObjectName(u"btnServerOpenBrowser")
-        self.btnServerOpenBrowser.setMinimumSize(QSize(60, 60))
-        self.btnServerOpenBrowser.setMaximumSize(QSize(60, 60))
-        self.btnServerOpenBrowser.setFont(font)
-        self.btnServerOpenBrowser.setIconSize(QSize(35, 35))
-
-        self.horizontalLayout.addWidget(self.btnServerOpenBrowser)
-
-        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout.addItem(self.horizontalSpacer_2)
-
-
-        self.verticalLayout_5.addLayout(self.horizontalLayout)
-
-
-        self.verticalLayout_6.addWidget(self.serverSettingFrame)
-
-        self.serverLogEdit = QTextEdit(self.serverFrame)
-        self.serverLogEdit.setObjectName(u"serverLogEdit")
-        self.serverLogEdit.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        self.serverLogEdit.setFrameShadow(QFrame.Shadow.Plain)
-        self.serverLogEdit.setLineWidth(1)
-        self.serverLogEdit.setAutoFormatting(QTextEdit.AutoFormattingFlag.AutoAll)
-        self.serverLogEdit.setReadOnly(True)
-
-        self.verticalLayout_6.addWidget(self.serverLogEdit)
-
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
@@ -357,8 +175,6 @@ class Ui_MainWindow(object):
         self.menuTools.setObjectName(u"menuTools")
         self.menuVideo = QMenu(self.menubar)
         self.menuVideo.setObjectName(u"menuVideo")
-        self.menuServer = QMenu(self.menubar)
-        self.menuServer.setObjectName(u"menuServer")
         self.menuAbout = QMenu(self.menubar)
         self.menuAbout.setObjectName(u"menuAbout")
         MainWindow.setMenuBar(self.menubar)
@@ -372,7 +188,6 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuKeyboard.menuAction())
         self.menubar.addAction(self.menuMouse.menuAction())
         self.menubar.addAction(self.menuTools.menuAction())
-        self.menubar.addAction(self.menuServer.menuAction())
         self.menubar.addAction(self.menuAbout.menuAction())
         self.menu_video_menu.addAction(self.action_video_devices)
         self.menu_video_menu.addAction(self.action_video_device_connect)
@@ -381,8 +196,6 @@ class Ui_MainWindow(object):
         self.menu_video_menu.addAction(self.action_control_setup)
         self.menu_video_menu.addAction(self.actionReload_MCU)
         self.menu_video_menu.addAction(self.actionReload_Key_Mouse)
-        self.menu_video_menu.addSeparator()
-        self.menu_video_menu.addAction(self.actionRGB)
         self.menu_video_menu.addSeparator()
         self.menu_video_menu.addAction(self.actionMinimize)
         self.menu_video_menu.addAction(self.actionexit)
@@ -418,10 +231,6 @@ class Ui_MainWindow(object):
         self.menuVideo.addAction(self.actionKeep_ratio)
         self.menuVideo.addAction(self.actionCapture_frame)
         self.menuVideo.addAction(self.actionRecord_video)
-        self.menuServer.addAction(self.actionOpen_Server_Manager)
-        self.menuServer.addAction(self.actionRefresh_device_list)
-        self.menuServer.addSeparator()
-        self.menuServer.addAction(self.actionWeb_client)
         self.menuAbout.addAction(self.actionAboutQt)
         self.menuAbout.addSeparator()
         self.menuAbout.addAction(self.actionAuthor)
@@ -510,25 +319,12 @@ class Ui_MainWindow(object):
         self.actionRelative_mouse.setText(QCoreApplication.translate("MainWindow", u"Relative mouse", None))
         self.action_control_setup.setText(QCoreApplication.translate("MainWindow", u"Control setup", None))
         self.actionAboutQt.setText(QCoreApplication.translate("MainWindow", u"About Qt", None))
-        self.label_4.setText(QCoreApplication.translate("MainWindow", u"KVM Server Settings", None))
-        self.label_2.setText(QCoreApplication.translate("MainWindow", u"Host:", None))
-        self.label.setText(QCoreApplication.translate("MainWindow", u"Port:", None))
-        self.label_3.setText(QCoreApplication.translate("MainWindow", u"Quality:", None))
-        self.kvmSetHostLine.setText(QCoreApplication.translate("MainWindow", u"0.0.0.0", None))
-        self.label_5.setText(QCoreApplication.translate("MainWindow", u"Video device:", None))
-        self.label_6.setText(QCoreApplication.translate("MainWindow", u"Resolution:", None))
-        self.label_7.setText(QCoreApplication.translate("MainWindow", u"Format:", None))
-        self.btnServerSwitch.setText("")
-        self.btnServerSetAuth.setText("")
-        self.btnServerOpenBrowser.setText("")
-        self.serverLogEdit.setPlaceholderText(QCoreApplication.translate("MainWindow", u"No log output", None))
         self.menu_video_menu.setTitle(QCoreApplication.translate("MainWindow", u"Device", None))
         self.menuKeyboard.setTitle(QCoreApplication.translate("MainWindow", u"Keyboard", None))
         self.menuShortcut_key.setTitle(QCoreApplication.translate("MainWindow", u"Shortcut key", None))
         self.menuMouse.setTitle(QCoreApplication.translate("MainWindow", u"Mouse", None))
         self.menuTools.setTitle(QCoreApplication.translate("MainWindow", u"Tools", None))
         self.menuVideo.setTitle(QCoreApplication.translate("MainWindow", u"Video", None))
-        self.menuServer.setTitle(QCoreApplication.translate("MainWindow", u"Server", None))
         self.menuAbout.setTitle(QCoreApplication.translate("MainWindow", u"About", None))
     # retranslateUi
 

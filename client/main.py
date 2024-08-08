@@ -20,9 +20,7 @@ from PySide6.QtWidgets import *
 from loguru import logger
 
 import hid_def
-import server_simple
 from default import default_config
-from server import FPSCounter, KVM_Server, add_auth_user, count_auth_users
 from ui import (
     device_setup_dialog_ui,
     indicator_ui,
@@ -253,7 +251,6 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         self.camera_info = None
         self.audio_opened = False
         self.device_connected = False
-        self.fpsc = FPSCounter()
 
         # 子窗口
         self.device_setup_dialog = MyDeviceSetupDialog()
@@ -368,7 +365,6 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             "init_ok": False,
             "screen_height": 0,
             "screen_width": 0,
-            "RGB_mode": False,
             "quick_paste": True,
             "relative_mouse": False,
         }
@@ -477,15 +473,11 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         self.actionHide_cursor.setIcon(load_icon("cursor"))
         self.actionCapture_frame.setIcon(load_icon("capture"))
         self.actionRecord_video.setIcon(load_icon("record"))
-        self.actionRGB.setIcon(load_icon("RGB"))
         self.actionQuick_paste.setIcon(load_icon("quick_paste"))
         self.actionWindows_Audio_Setting.setIcon(load_icon("audio"))
         self.actionWindows_Device_Manager.setIcon(load_icon("device"))
         self.actionNum_Keyboard.setIcon(load_icon("numkey"))
-        self.actionOpen_Server_Manager.setIcon(load_icon("server"))
         self.actionSystem_hook.setIcon(load_icon("hook"))
-        self.actionRefresh_device_list.setIcon(load_icon("reload"))
-        self.actionWeb_client.setIcon(load_icon("web"))
         self.actionRelative_mouse.setIcon(load_icon("relative"))
         self.actionAboutQt.setIcon(load_icon("python"))
 
@@ -494,8 +486,6 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         self.set_checked(self.actionQuick_paste, True)
 
         # 初始化监视器
-        self.setCentralWidget(self.serverFrame)
-        self.serverFrame.setHidden(True)
         self.videoWidget = QVideoWidget()
         self.videoWidget.setAttribute(Qt.WA_OpaquePaintEvent)
         self.takeCentralWidget()
@@ -573,19 +563,8 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             lambda: self.menu_tools_actions(5)
         )
 
-        self.actionOpen_Server_Manager.triggered.connect(self.open_server_manager)
-        self.actionRefresh_device_list.triggered.connect(
-            self.refresh_server_device_list
-        )
-        self.actionWeb_client.triggered.connect(self.open_web_client)
-
-        self.actionRGB.triggered.connect(self.RGB_func)
         self.paste_board_dialog.pushButtonFile.clicked.connect(
             self.paste_board_file_select
-        )
-
-        self.kvmSetDeviceCombo.currentTextChanged.connect(
-            self.update_server_device_info
         )
 
         self.actionAuthor.triggered.connect(
@@ -648,10 +627,6 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         self.mouse_scroll_timer = QTimer()
         self.mouse_scroll_timer.timeout.connect(self.mouse_scroll_stop)
 
-        self._log_signal.connect(self.set_log_text)
-        fake_std.callback = self._log_signal.emit
-        self.server = KVM_Server(parent=self)
-        self.server_simple_started = False
         self._wheel_signal.connect(self.mouse_wheel_act)
 
         self._last_mouse_report = time.perf_counter()
@@ -814,14 +789,6 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
 
     # 弹出采集卡设备设置窗口，并打开采集卡设备
     def device_config(self):
-        if self.serverFrame.isVisible():
-            QMessageBox.critical(
-                self,
-                self.tr("Error"),
-                self.tr("Close KVM Server before local connection"),
-            )
-            return False
-
         self.device_setup_dialog.comboBox.clear()
         cameras = QMediaDevices.videoInputs()
         remember_name = self.video_config["device_name"]
@@ -1018,13 +985,6 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
 
     # 初始化指定配置视频设备
     def setup_device(self):
-        if self.serverFrame.isVisible():
-            QMessageBox.critical(
-                self,
-                self.tr("Error"),
-                self.tr("Close KVM Server before local connection"),
-            )
-            return False
         if self.camera_info is None:
             self.update_device_info()
             if self.camera_info is None:
@@ -1180,13 +1140,6 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
 
     # 启用和禁用视频设备
     def set_device(self, state, center=False):
-        if self.serverFrame.isVisible():
-            QMessageBox.critical(
-                self,
-                self.tr("Error"),
-                self.tr("Close KVM Server before local connection"),
-            )
-            return False
         if state:
             if not self.setup_device():
                 return
@@ -1978,18 +1931,6 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         self.qt_sleep(50)
         self.update_indicatorLight()
 
-    def RGB_func(self):
-        self.status["RGB_mode"] = not self.status["RGB_mode"]
-        self.set_checked(self.actionRGB, self.status["RGB_mode"])
-        self.statusBar().showMessage(
-            self.tr("RGB Indicator: ") + str_bool(self.status["RGB_mode"])
-        )
-        if not self.status["RGB_mode"]:
-            if self.status["mouse_capture"]:
-                self.set_ws2812b(0, 30, 30)
-            else:
-                self.set_ws2812b(30, 30, 0)
-
     # 全屏幕切换
     def fullscreen_func(self):
         self.status["fullscreen"] = not self.status["fullscreen"]
@@ -2235,10 +2176,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             y_hid = (y - y_diff / 2 - y_pos) / (height - y_diff)
             x_hid = max(min(x_hid, 1), 0)
             y_hid = max(min(y_hid, 1), 0)
-            if self.status["RGB_mode"]:
-                self.set_ws2812b(
-                    x_hid * 255, y_hid * 255, (1 - x_hid) * (1 - y_hid) * 255
-                )
+
             self.statusBar().showMessage(f"X={x_hid * x_res:.0f}, Y={y_hid * y_res:.0f}")
             t = time.perf_counter()
             self._last_mouse_report = t
@@ -2405,10 +2343,6 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         if scancode == 285:  # Right Ctrl
             self.release_mouse()
             self.statusBar().showMessage(self.tr("Mouse capture off"))
-        if self.status["RGB_mode"]:
-            self.set_ws2812b(
-                *hsv_to_rgb(random.random(), random.randint(6, 10) / 10, 0.4)
-            )
         self.update_kb(scancode, True)
         self.shortcut_status(kb_buffer)
 
@@ -2428,289 +2362,10 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         # os._exit(0)
         pass
 
-    @Slot()
-    def on_btnServerSwitch_clicked(self):
-        if self.server.running:
-            self.server.stop_server()
-            self.btnServerSwitch.setIcon(load_icon("Play"))
-            logger.info("Server stopped")
-            self.kvmSetPortSpin.setEnabled(True)
-            self.kvmSetHostLine.setEnabled(True)
-            self.kvmSetQualitySpin.setEnabled(True)
-            self.kvmSetFormatCombo.setEnabled(True)
-            self.kvmSetDeviceCombo.setEnabled(True)
-            self.kvmSetResCombo.setEnabled(True)
-        else:
-            if (
-                    self.kvmSetDeviceCombo.currentText() == ""
-                    or self.kvmSetResCombo.currentText() == ""
-            ):
-                QMessageBox.warning(self, self.tr("Warning"), self.tr("Invalid device"))
-                return
-            self.server.config["video"]["quality"] = self.kvmSetQualitySpin.value()
-            width, height = self.kvmSetResCombo.currentText().split("x")
-            self.server.config["video"]["width"] = int(width)
-            self.server.config["video"]["height"] = int(height)
-            self.server.config["video"]["format"] = self.kvmSetFormatCombo.currentText()
-            self.server.command_callback = self.server_command_callback
-            try:
-                host = self.kvmSetHostLine.text()
-                port = self.kvmSetPortSpin.value()
-                self.server.start_server(
-                    host=host,
-                    device=self.kvmSetDeviceCombo.currentText(),
-                    port=port,
-                )
-            except Exception as e:
-                self.server.running = False
-                logger.error(f"Server start failed: {e}")
-                QMessageBox.warning(
-                    self, self.tr("Warning"), f"Server start failed: {e}"
-                )
-                return
-            self.btnServerSwitch.setIcon(load_icon("pause"))
-            self.kvmSetPortSpin.setEnabled(False)
-            self.kvmSetHostLine.setEnabled(False)
-            self.kvmSetQualitySpin.setEnabled(False)
-            self.kvmSetFormatCombo.setEnabled(False)
-            self.kvmSetDeviceCombo.setEnabled(False)
-            self.kvmSetResCombo.setEnabled(False)
-            logger.info(f"Server hosting on {host}:{port}")
-
-    @Slot()
-    def on_btnServerSetAuth_clicked(self):
-        # ask if auth is enabled
-        box = QMessageBox(self)
-        box.setWindowTitle(self.tr("HTTP Authentication"))
-        if self.server.auth_required:
-            box.setText(
-                self.tr("Authentication is enabled") + f" ({count_auth_users()} users)"
-            )
-            box.b1 = box.addButton(self.tr("Disable"), QMessageBox.ActionRole)
-        else:
-            box.setText(self.tr("Authentication is disabled"))
-            box.b1 = box.addButton(self.tr("Enable"), QMessageBox.ActionRole)
-        box.b2 = box.addButton(self.tr("Add User"), QMessageBox.ActionRole)
-        box.b3 = box.addButton(self.tr("Cancel"), QMessageBox.RejectRole)
-        box.exec()
-        if box.clickedButton() == box.b1:
-            self.server.auth_required = not self.server.auth_required
-            logger.info(
-                self.tr("Authentication enabled")
-                if self.server.auth_required
-                else self.tr("Authentication disabled")
-            )
-            if self.server.auth_required and not count_auth_users():
-                logger.warning(self.tr("No user found, remember to add one"))
-        elif box.clickedButton() == box.b2:
-            username, ret = QInputDialog.getText(
-                self, self.tr("Add User"), self.tr("Username:"), QLineEdit.Normal, ""
-            )
-            if not ret:
-                return
-            password, ret = QInputDialog.getText(
-                self, self.tr("Add User"), self.tr("Password:"), QLineEdit.Normal, ""
-            )
-            if not ret:
-                return
-            add_auth_user(username, password)
-            logger.info(f"User {username} added")
-
-    def refresh_server_device_list(self):
-        self.kvmSetDeviceCombo.clear()
-        cameras = QMediaDevices.videoInputs()
-        devices = []
-        rmbd = self.video_config["device_name"]
-        for camera in cameras:
-            self.kvmSetDeviceCombo.addItem(camera.description())
-            devices.append(camera.description())
-        if rmbd in devices:
-            self.kvmSetDeviceCombo.setCurrentText(rmbd)
-        else:
-            self.kvmSetDeviceCombo.setCurrentIndex(0)
-        self.update_server_device_info()
-
-    def update_server_device_info(self):
-        self.kvmSetResCombo.clear()
-        self.kvmSetFormatCombo.clear()
-        selected = self.kvmSetDeviceCombo.currentText()
-        cameras = QMediaDevices.videoInputs()
-        for camera in cameras:
-            if camera.description() == selected:
-                camera_info = camera
-                break
-        else:
-            return
-        res_list = []
-        fmt_list = []
-        for i in camera_info.videoFormats():
-            resolutions_str = f"{i.resolution().width()}x{i.resolution().height()}"
-            if resolutions_str not in res_list:
-                res_list.append(resolutions_str)
-                self.kvmSetResCombo.addItem(resolutions_str)
-            fmt = i.pixelFormat().name.split("_")[1]
-            if fmt not in fmt_list:
-                fmt_list.append(fmt)
-                self.kvmSetFormatCombo.addItem(fmt)
-        if camera_info.description() == self.video_config["device_name"]:
-            self.kvmSetResCombo.setCurrentText(
-                f"{self.video_config['resolution_X']}x{self.video_config['resolution_Y']}"
-            )
-            self.kvmSetFormatCombo.setCurrentText(self.video_config["format"])
-
-    def open_server_manager(self):
-        if not self.serverFrame.isVisible():
-            if self.camera_opened:
-                ret = QMessageBox.warning(
-                    self,
-                    self.tr("Warning"),
-                    self.tr("Video device is opened, close it?"),
-                    QMessageBox.Yes | QMessageBox.No,
-                    QMessageBox.No,
-                )
-                if ret == QMessageBox.Yes:
-                    self.set_device(False)
-                else:
-                    return
-            self.takeCentralWidget()
-            self.setCentralWidget(self.serverFrame)
-            self.disconnect_label.hide()
-            self.serverFrame.show()
-            self.actionOpen_Server_Manager.setText(self.tr("Close Server Manager"))
-            self.refresh_server_device_list()
-            self.btnServerSwitch.setIcon(load_icon("play"))
-            self.btnServerOpenBrowser.setIcon(load_icon("browser"))
-            self.btnServerSetAuth.setIcon(load_icon("lock"))
-        else:
-            if self.server.running:
-                ret = QMessageBox.warning(
-                    self,
-                    self.tr("Warning"),
-                    self.tr("Server is running, stop it?"),
-                    QMessageBox.Yes | QMessageBox.No,
-                    QMessageBox.No,
-                )
-                if ret == QMessageBox.Yes:
-                    self.on_btnServerSwitch_clicked()
-                else:
-                    return
-            self.takeCentralWidget()
-            self.setCentralWidget(self.disconnect_label)
-            self.serverFrame.hide()
-            self.disconnect_label.show()
-            self.actionOpen_Server_Manager.setText(self.tr("Open Server Manager"))
-
-    @Slot()
-    def on_btnServerOpenBrowser_clicked(self):
-        url = f"http://127.0.0.1:{self.kvmSetPortSpin.value()}"
-        QDesktopServices.openUrl(QUrl(url))
-
-    def open_web_client(self):
-        if not self.serverFrame.isVisible():
-            if self.camera_opened:
-                ret = QMessageBox.warning(
-                    self,
-                    self.tr("Warning"),
-                    self.tr("Video device is opened, close it first?"),
-                    QMessageBox.Yes | QMessageBox.No,
-                    QMessageBox.No,
-                )
-                if ret == QMessageBox.Yes:
-                    self.set_device(False)
-        if self.server.running:
-            ret = QMessageBox.warning(
-                self,
-                self.tr("Warning"),
-                self.tr("Server is running, stop it?"),
-                QMessageBox.Yes | QMessageBox.No,
-                QMessageBox.No,
-            )
-            if ret == QMessageBox.Yes:
-                self.on_btnServerSwitch_clicked()
-        if not self.server_simple_started:
-            self.server_simple_port = server_simple.start_server()
-            self.server_simple_started = True
-        url = f"http://127.0.0.1:{self.server_simple_port}"
-        QDesktopServices.openUrl(QUrl(url))
-
-    def set_log_text(self, text):
-        self.serverLogEdit.setText(text)
-        self.serverLogEdit.moveCursor(QTextCursor.End)
-
     def mouse_wheel_act(self):
         if self.mouse_scroll_timer.isActive():
             self.mouse_scroll_timer.stop()
         self.mouse_scroll_timer.start(100)
-
-    def server_command_callback(self, data_type, data_payload):
-        global mouse_buffer, kb_buffer, mouse_buffer_rel
-        if data_type == "reset_mcu":
-            self.reset_keymouse(2)
-        elif data_type == "reset_hid":
-            self.reset_keymouse(4)
-        if not self.device_connected:
-            return
-        if data_type == "mouse_wheel":
-            if not self.status["relative_mouse"]:
-                buffer = mouse_buffer
-                bit = 7
-            else:
-                buffer = mouse_buffer_rel
-                bit = 5
-            if data_payload[0] > 0:
-                buffer[bit] = 0x01
-            elif data_payload[0] < 0:
-                buffer[bit] = 0xFF
-            else:
-                buffer[bit] = 0
-            self._hid_signal.emit(buffer)
-            self._wheel_signal.emit()
-        elif data_type == "mouse_btn":
-            if not self.status["relative_mouse"]:
-                buffer = mouse_buffer
-            else:
-                buffer = mouse_buffer_rel
-            if data_payload[1] == 2:
-                buffer[2] |= data_payload[0]
-            elif data_payload[1] == 3:
-                buffer[2] &= ~data_payload[0]
-            else:
-                mouse_buffer = [2, 0, 0, 0, 0, 0, 0, 0, 0]
-                mouse_buffer_rel = [7, 0, 0, 0, 0, 0, 0, 0, 0]
-                self._hid_signal.emit(mouse_buffer)
-                self._hid_signal.emit(mouse_buffer_rel)
-                return
-            self._hid_signal.emit(buffer)
-        elif data_type == "mouse_pos":
-            self.status["relative_mouse"] = False
-            x, y = int(data_payload[0]) & 0x7FFF, int(data_payload[1]) & 0x7FFF
-            mouse_buffer[3] = x & 0xFF
-            mouse_buffer[4] = x >> 8
-            mouse_buffer[5] = y & 0xFF
-            mouse_buffer[6] = y >> 8
-            self._hid_signal.emit(mouse_buffer)
-        elif data_type == "mouse_offset":
-            self.status["relative_mouse"] = True
-            x, y = int(data_payload[0]), int(data_payload[1])
-            x = max(min(x, 127), -127)
-            y = max(min(y, 127), -127)
-            x += 0xFF if x < 0 else 0
-            y += 0xFF if y < 0 else 0
-            mouse_buffer_rel[3] = x & 0xFF
-            mouse_buffer_rel[4] = y & 0xFF
-            self._hid_signal.emit(mouse_buffer_rel)
-        elif data_type == "keyboard":
-            state = data_payload[1]
-            key = data_payload[0]
-            if state == 3:  # release all
-                kb_buffer = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-                self._hid_signal.emit(kb_buffer)
-            else:
-                self.update_kb_hid(key, state == 1)
-        elif data_type == "paste":
-            logger.debug(f"Received {len(data_payload)} bytes paste data")
-            if not self.ignore_event:
-                self.paste_board_send(data_payload)
 
     _restore_track = False
 
