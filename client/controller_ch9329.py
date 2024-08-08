@@ -54,7 +54,7 @@ class ControllerCh9329:
         self.baud: int = baud
         self.screen_x: int = screen_x
         self.screen_y: int = screen_y
-        self.min_interval: float = 0.1
+        self.min_interval: float = 0.2
         self.max_interval: float = 0.5
         self.timeout: float = 0.1
 
