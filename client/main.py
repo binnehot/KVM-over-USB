@@ -381,7 +381,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         # 窗口图标
         self.setWindowIcon(QIcon(f"{PATH}/icons/icon.ico"))
         self.device_setup_dialog.setWindowIcon(load_icon("import"))
-        self.controller_setup_dialog.setWindowIcon(load_icon("import"))
+        self.controller_setup_dialog.setWindowIcon(load_icon("controller"))
         self.shortcut_key_dialog.setWindowIcon(load_icon("keyboard-settings-outline"))
         self.paste_board_dialog.setWindowIcon(load_icon("paste"))
         self.indicator_dialog.setWindowIcon(load_icon("capslock"))
@@ -455,7 +455,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         self.action_video_device_disconnect.setIcon(load_icon("video-off"))
         self.actionMinimize.setIcon(load_icon("window-minimize"))
         self.actionexit.setIcon(load_icon("window-close"))
-        self.action_control_setup.setIcon(load_icon("import"))
+        self.action_control_setup.setIcon(load_icon("controller"))
         self.actionReload_MCU.setIcon(load_icon("reload"))
         self.actionReload_Key_Mouse.setIcon(load_icon("reload"))
         self.action_fullscreen.setIcon(load_icon("fullscreen"))
@@ -487,6 +487,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         self.actionRefresh_device_list.setIcon(load_icon("reload"))
         self.actionWeb_client.setIcon(load_icon("web"))
         self.actionRelative_mouse.setIcon(load_icon("relative"))
+        self.actionAboutQt.setIcon(load_icon("python"))
 
         if self.video_config["keep_aspect_ratio"]:
             self.set_checked(self.actionKeep_ratio, True)
@@ -593,6 +594,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         self.actionRaw_author.triggered.connect(
             lambda: QDesktopServices.openUrl(QUrl("https://github.com/Jackadminx"))
         )
+        self.actionAboutQt.triggered.connect(QApplication.aboutQt)
 
         self.device_setup_dialog.checkBoxAudio.setChecked(
             self.audio_config["audio_support"]
@@ -2466,7 +2468,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
                     self, self.tr("Warning"), f"Server start failed: {e}"
                 )
                 return
-            self.btnServerSwitch.setIcon(load_icon("Pause"))
+            self.btnServerSwitch.setIcon(load_icon("pause"))
             self.kvmSetPortSpin.setEnabled(False)
             self.kvmSetHostLine.setEnabled(False)
             self.kvmSetQualitySpin.setEnabled(False)
@@ -2576,9 +2578,9 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             self.serverFrame.show()
             self.actionOpen_Server_Manager.setText(self.tr("Close Server Manager"))
             self.refresh_server_device_list()
-            self.btnServerSwitch.setIcon(load_icon("Play"))
-            self.btnServerOpenBrowser.setIcon(load_icon("Safari"))
-            self.btnServerSetAuth.setIcon(load_icon("Lock"))
+            self.btnServerSwitch.setIcon(load_icon("play"))
+            self.btnServerOpenBrowser.setIcon(load_icon("browser"))
+            self.btnServerSetAuth.setIcon(load_icon("lock"))
         else:
             if self.server.running:
                 ret = QMessageBox.warning(
