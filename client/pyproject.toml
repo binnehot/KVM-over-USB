@@ -7,13 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "<3.13,>=3.9"
-flask-cors = "^4.0.1"
-flask-httpauth = "^4.8.0"
-flask = "^3.0.3"
 pyyaml = "^6.0.1"
-werkzeug = "^3.0.3"
-flask-sock = "^0.7.0"
-hidapi = "^0.14.0.post2"
 loguru = "^0.7.2"
 pywin32 = "^306"
 pyside6-addons = "^6.7.2"
