@@ -33,13 +33,6 @@ from ui import (
     controller_setup_ui,
 )
 
-if os.name == 'nt':  # sys.platform == 'win32':
-    from serial.tools.list_ports_windows import comports as list_comports
-elif os.name == 'posix':
-    from serial.tools.list_ports_posix import comports as list_comports
-else:
-    raise ImportError("Sorry: no implementation for your platform ('{}') available".format(os.name))
-
 PATH = os.path.dirname(os.path.abspath(__file__))
 ARGV_PATH = os.path.dirname(os.path.abspath(sys.argv[0]))
 
@@ -264,7 +257,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
 
         # 子窗口
         self.device_setup_dialog = MyDeviceSetupDialog()
-        self.control_setup_dialog = MyControllerSetupDialog()
+        self.controller_setup_dialog = MyControllerSetupDialog()
         self.shortcut_key_dialog = MyShortcutKeyDialog()
         self.paste_board_dialog = MyPasteBoardDialog()
         self.indicator_dialog = MyIndicatorDialog()
@@ -388,7 +381,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         # 窗口图标
         self.setWindowIcon(QIcon(f"{PATH}/icons/icon.ico"))
         self.device_setup_dialog.setWindowIcon(load_icon("import"))
-        self.control_setup_dialog.setWindowIcon(load_icon("import"))
+        self.controller_setup_dialog.setWindowIcon(load_icon("import"))
         self.shortcut_key_dialog.setWindowIcon(load_icon("keyboard-settings-outline"))
         self.paste_board_dialog.setWindowIcon(load_icon("paste"))
         self.indicator_dialog.setWindowIcon(load_icon("capslock"))
@@ -642,11 +635,12 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         self.check_device_timer.timeout.connect(self.check_device_status)
         self.check_device_timer.start(1000)
 
-        # 检测com端口
-        ports: list[str] = self.detect_device_ports()
-        if len(ports) > 0:
-            # 获取最后一个com端口
-            self.controller_config["controller_port"] = ports[-1]
+        if self.controller_config["controller_port"] == "auto":
+            # 检测com端口
+            ports: list[str] = hid_def.detect_serial_ports()
+            if len(ports) > 0:
+                # 获取最后一个com端口
+                self.controller_config["controller_port"] = ports[-1]
         self.reset_keymouse(4)
 
         self.mouse_scroll_timer = QTimer()
@@ -687,7 +681,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             self.device_setup_dialog.checkBoxAutoConnect.setChecked(True)
             QTimer().singleShot(1000, lambda: self.set_device(True, center=True))
         # 保存配置文件
-        self.save_config()
+        # self.save_config()
 
     code_remap = {
         "Rcontrol": 0x011D,
@@ -917,34 +911,30 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         except Exception as e:
             logger.error(e)
 
-    @staticmethod
-    def detect_device_ports() -> list[str]:
-        port_name_list: list[str] = []
-        port_info_list: serial.tools.list_ports.ListPortInfo = list_comports(include_links=False)
-        for port_info in port_info_list:
-            port_name_list.append(port_info.name)
-        port_info_list.sort()
-        return port_name_list
-
     # 控制器设置
     def controller_setup(self):
-        port_name_list = self.detect_device_ports()
-        self.control_setup_dialog.combobox_com_port.clear()
+        port_name_list = hid_def.detect_serial_ports()
+        self.controller_setup_dialog.combobox_com_port.clear()
+        self.controller_setup_dialog.combobox_com_port.addItem(self.tr("auto"""))
         for port_name in port_name_list:
-            self.control_setup_dialog.combobox_com_port.addItem(port_name)
-
-        self.control_setup_dialog.line_edit_baud.setText(str(self.controller_config["controller_baud"]))
-        self.control_setup_dialog.label_screen_x = int(self.video_config["resolution_X"])
-        self.control_setup_dialog.label_screen_y = int(self.video_config["resolution_Y"])
-        dialog_return_code = self.control_setup_dialog.exec()
+            self.controller_setup_dialog.combobox_com_port.addItem(port_name)
+        self.controller_setup_dialog.combobox_com_port.setCurrentIndex(0)
+        self.controller_setup_dialog.line_edit_baud.setText(str(self.controller_config["controller_baud"]))
+        self.controller_setup_dialog.label_screen_x = int(self.video_config["resolution_X"])
+        self.controller_setup_dialog.label_screen_y = int(self.video_config["resolution_Y"])
+        dialog_return_code = self.controller_setup_dialog.exec()
         if dialog_return_code == 1:
             # 用户按下确定
-            self.controller_config["controller_port"] = self.control_setup_dialog.combobox_com_port.currentText()
-            self.controller_config["controller_baud"] = int(self.control_setup_dialog.line_edit_baud.text())
+            user_select_port_name = self.controller_setup_dialog.combobox_com_port.currentText()
+            if self.tr("auto") == user_select_port_name:
+                self.controller_config["controller_port"] = "auto"
+            else:
+                self.controller_config["controller_port"] = user_select_port_name
+            self.controller_config["controller_baud"] = int(self.controller_setup_dialog.line_edit_baud.text())
             self.controller_config["controller_screen_x"] = int(
-                self.control_setup_dialog.line_edit_screen_x_size.text())
+                self.controller_setup_dialog.line_edit_screen_x_size.text())
             self.controller_config["controller_screen_y"] = int(
-                self.control_setup_dialog.line_edit_screen_y_size.text())
+                self.controller_setup_dialog.line_edit_screen_y_size.text())
             self.save_config()
             self.reset_keymouse(4)
             pass
@@ -2058,7 +2048,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         )
         self.set_checked(self.actionKeep_on_top, self.status["topmost"])
 
-    # 窗口事件
+    # 窗口改变事件
     def changeEvent(self, event):
         # 窗口失焦事件
         if event.type() == QEvent.WindowDeactivate:
@@ -2070,7 +2060,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             if not self.isActiveWindow() and self.status["init_ok"]:
                 # 窗口失去焦点时重置键盘，防止卡键
                 self.reset_keymouse(1)
-        # logger.debug(f"window event: {event}")
+        # logger.debug(f"window change event: {event}")
 
     def mouseButton_to_int(self, s: Qt.MouseButton):
         if s == Qt.LeftButton:

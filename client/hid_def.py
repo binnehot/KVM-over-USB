@@ -1,3 +1,4 @@
+import os
 import time
 from enum import IntEnum, auto
 
@@ -5,6 +6,12 @@ from loguru import logger
 
 from controller_ch9329 import Controller
 
+if os.name == "nt":  # sys.platform == 'win32':
+    from serial.tools.list_ports_windows import comports as list_comports
+elif os.name == "posix":
+    from serial.tools.list_ports_posix import comports as list_comports
+else:
+    raise ImportError("Sorry: no implementation for your platform {} available".format(os.name))
 
 class DebugMode(IntEnum):
     FILTER_NONE = auto()
@@ -25,11 +32,28 @@ def debug_mode(mode: DebugMode):
     __DEBUG_MODE__ = mode
 
 
+def detect_serial_ports() -> list[str]:
+    port_name_list: list[str] = []
+    port_info_list: serial.tools.list_ports.ListPortInfo = list_comports(include_links=False)
+    for port_info in port_info_list:
+        port_name_list.append(port_info.name)
+    port_info_list.sort()
+    return port_name_list
+
+
 # 初始化HID设备设置
 # 返回0为成功
 # 返回非0为失败
 def init_usb(controller_port: str, baud: int = 9600, screen_x: int = 1920, screen_y: int = 1080):
     global GLOBAL_CONTROLLER
+    if controller_port == 'auto':
+        # 检测com端口
+        ports: list[str] = detect_serial_ports()
+        if len(ports) > 0:
+            # 获取最后一个com端口
+            controller_port = ports[-1]
+        else:
+            return 1
     GLOBAL_CONTROLLER.set_connection_params(controller_port, baud, screen_x, screen_y)
     status = GLOBAL_CONTROLLER.create_connection()
     if status is True:
