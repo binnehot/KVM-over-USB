@@ -851,7 +851,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
     def controller_setup(self):
         port_name_list = hid_device.detect_serial_ports()
         self.controller_setup_dialog.combobox_com_port.clear()
-        self.controller_setup_dialog.combobox_com_port.addItem(self.tr("auto"""))
+        self.controller_setup_dialog.combobox_com_port.addItem(self.tr("auto"))
         for port_name in port_name_list:
             self.controller_setup_dialog.combobox_com_port.addItem(port_name)
         self.controller_setup_dialog.combobox_com_port.setCurrentIndex(0)
