@@ -1,5 +1,4 @@
 default_config = """config:
-  dark_theme: true
   fullscreen_alert_showed: false
   fullscreen_key: F11
   translation: true
@@ -25,6 +24,11 @@ audio_config:
   audio_device_in: Default
   audio_device_out: Default
   audio_support: false
+controller_config:
+  controller_port: auto
+  controller_baud: 9600
+  controller_screen_x: 1920
+  controller_screen_y: 1080
 shortcut_key:
   shortcut_key_hidcode:
   - - 1

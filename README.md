@@ -32,16 +32,12 @@
 [CH9329 芯片串口通信协议]( https://www.wch.cn/uploads/file/20190508/1557278355473027.pdf) 想了解细节的可以看看，其实ch9329的python库都写好了，用就可以了。
 
 ## 编译
-需要的文件
 
-- 原项目ElluFX/KVM 项目v1.1的client文件夹
-- ./client/hid_def.py 覆盖原文件
-- ./client/data/HIDcode2KeyName.yaml 增加这个文件
+1、参考项目中的 requirements.txt 或者 pyproject.toml 来安装所需要的 Python 依赖
 
-_注意原项目有个文件夹名字需要确认一下，”./client/data“中的”data“全部小写。_
+这里支持并且推荐使用 poetry 来安装管理依赖
 
-requirements
-参考原项目requirements.txt，再多三个库 numpy, pyserial 和 ch9329
+2、最后通过 compiler.ps1 来编译项目。
 
 ## 使用
 
@@ -57,16 +53,15 @@ Windows客户端（控制端）
 
 
 2，配置COM端口。
-默认端口COM9，如果需要更改端口，请在HID setting对话框更改， 或者编辑文件 config_hid.yaml
+默认端口COM5，如果需要更改端口，请参考图片
 
-【HID setting】
-
-![image](https://github.com/binnehot/KVM-over-USB/blob/main/image/3_COM_setting.png)
+![image](https://github.com/wevsty/KVM-over-USB/blob/cleanup/image/3.1_COM_setting.png)
+![image](https://github.com/wevsty/KVM-over-USB/blob/cleanup/image/3.2_COM_setting.png)
 
 
 服务端（被控制端）
 HDMI和USB，即插即用，不用安装驱动，不挑操作系统，BIOS设置也支持。
-注意：UI中 原项目留下来的某些功能需要原硬件支持，放在这里就没用了，比如，RGB灯，MCU重置…
+注意：UI中MCU重置功能已经进行简单实现，RGB灯功能，暂时未有实现。
 
 【应用例子，修改BIOS设定】
 
@@ -74,9 +69,11 @@ HDMI和USB，即插即用，不用安装驱动，不挑操作系统，BIOS设置
 
 ### 已知问题
 
-1.  键盘打字快了会出现重复字符，可以试一试用一个手指头打字，慢一点，或者等原作者优化原来的项目
-2.  鼠标移动和点击有点慢，需要练习和技巧，这也需要原作者优化原来的项目，或者接一个无线鼠标
+~~1.  键盘打字快了会出现重复字符，可以试一试用一个手指头打字，慢一点，或者等原作者优化原来的项目~~
 
+~~2.  鼠标移动和点击有点慢，需要练习和技巧，这也需要原作者优化原来的项目，或者接一个无线鼠标~~
+
+以上问题已经修复
 
 ## 感谢
 特别感谢 [ElluIFX](https://github.com/ElluIFX)，如果有时间的话，期待键盘打字优化一轮，再次感谢。 
