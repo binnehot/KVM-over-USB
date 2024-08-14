@@ -22,21 +22,19 @@ SELF_PATH = os.path.dirname(os.path.abspath(__file__))
 class Ch9329KeyboardAttachFunction:
 
     @staticmethod
-    def trigger_keys(ser: Serial, keys: list, modifiers: List[Modifier] = []) -> None:
+    def trigger_keys(ser: Serial, keys: list[str], modifiers: List[Modifier] = []) -> None:
         press_keys = keys.copy()
         press_modifiers = modifiers.copy()
         press_keys = list(set(press_keys))
         press_modifiers = list(set(press_modifiers))
         # Supports press to 6 normal buttons at the same time
         if len(press_keys) > 6:
-            press_keys = press_keys[0:5]
+            press_keys = press_keys[0:6]
         # len(keys) <= 6
         else:
             while len(press_keys) != 6:
                 press_keys.append('')
         logger.debug(f'press_keys {press_keys}, {press_modifiers}')
-        if press_keys[0] != '' and len(press_modifiers) > 0:
-            pass
         keyboard.send(ser, (press_keys[0], press_keys[1], press_keys[2], press_keys[3], press_keys[4], press_keys[5]),
                       press_modifiers)
 
