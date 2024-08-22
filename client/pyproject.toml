@@ -16,7 +16,7 @@ pyside6 = "^6.7.2"
 pywinhook = "^1.6.2"
 pyserial = "^3.5"
 ch9329 = "^1.2.6"
-nuitka = "^2.4.5"
+nuitka = "^2.4.7"
 
 
 [build-system]
