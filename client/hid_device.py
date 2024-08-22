@@ -76,7 +76,11 @@ def hid_event(buffer: list, read_mode: bool = False):
     if __DEBUG_MODE__ < DebugMode.FILTER_HID:
         logger.debug(f"hid_report(buffer={buffer}, read_mode={read_mode})")
         # return status_code, replay
-
+    if GLOBAL_CONTROLLER.check_connection() is False:
+        status_code = 1
+        if __DEBUG_MODE__ < DebugMode.FILTER_KEYBOARD:
+            logger.debug(f"hid_event : check connection failed.")
+        return status_code, replay
     buffer = buffer[-1:] + buffer[:-1]
     buffer[0] = 0
     # buffer[1] 为信息类型判断标志
