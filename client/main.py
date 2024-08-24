@@ -496,7 +496,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         self.actionCustomKey.triggered.connect(self.shortcut_key_func)
         self.actionReload_Key_Mouse.triggered.connect(lambda: self.reset_keymouse(4))
         self.actionMinimize.triggered.connect(self.window_minimized)
-        self.actionexit.triggered.connect(sys.exit)
+        self.actionexit.triggered.connect(self.close)
 
         self.device_setup_dialog.comboBox.currentIndexChanged.connect(
             self.update_device_info
@@ -2325,10 +2325,6 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         self.update_kb(scancode, False)
         self.shortcut_status(kb_buffer)
 
-    def closeEvent(self, event):
-        # os._exit(0)
-        pass
-
     def mouse_wheel_act(self):
         if self.mouse_scroll_timer.isActive():
             self.mouse_scroll_timer.stop()
@@ -2355,6 +2351,17 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             self.pythoncom_timer.stop()
             self.statusbar_btn5.setPixmap(load_pixmap("hook-off"))
         super().focusOutEvent(event)
+
+    def close_cleanup(self):
+        # 退出hid线程
+        self._hid_thread.quit()
+        self._hid_thread.wait()
+        pass
+
+    def closeEvent(self, event):
+        # os._exit(0)
+        self.close_cleanup()
+        pass
 
 
 def clear_splash():
@@ -2415,4 +2422,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    exit_code: int = main()
+    exit(exit_code)
