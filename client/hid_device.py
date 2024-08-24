@@ -170,11 +170,12 @@ def hid_mouse_event(buffer):
         else:
             # 包含鼠标点击事件
             hid_mouse_press(buffer)
+            time.sleep(GLOBAL_CONTROLLER.random_interval())
+            hid_mouse_release(buffer)
             if (buffer[4] == 0) and (buffer[5] == 0) and (buffer[6] == 0) and (buffer[7] == 0):
-                time.sleep(GLOBAL_CONTROLLER.random_interval())
+                pass
             else:
                 hid_mouse_absolute_move(buffer)
-            hid_mouse_release(buffer)
         if buffer[8] != 0:
             hid_mouse_wheel(buffer[8])
     # 相对坐标模式
@@ -183,11 +184,12 @@ def hid_mouse_event(buffer):
             hid_mouse_relative_move(buffer)
         else:
             hid_mouse_press(buffer)
-            if (buffer[4] == 0) and (buffer[5] == 0) and (buffer[6] == 0) and (buffer[7] == 0):
-                time.sleep(GLOBAL_CONTROLLER.random_interval())
-            else:
-                hid_mouse_absolute_move(buffer)
+            time.sleep(GLOBAL_CONTROLLER.random_interval())
             hid_mouse_release(buffer)
+            if (buffer[4] == 0) and (buffer[5] == 0) and (buffer[6] == 0) and (buffer[7] == 0):
+                pass
+            else:
+                hid_mouse_relative_move(buffer)
         if buffer[6] != 0:
             hid_mouse_wheel(buffer[6])
     else:
