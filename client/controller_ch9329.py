@@ -19,7 +19,7 @@ __DEBUG__ = False
 SELF_PATH = os.path.dirname(os.path.abspath(__file__))
 
 
-class Ch9329KeyboardAttachFunction:
+class Ch9329AttachFunction:
 
     @staticmethod
     def trigger_keys(ser: Serial, keys: list[str], modifiers: List[Modifier] = []) -> None:
@@ -37,6 +37,14 @@ class Ch9329KeyboardAttachFunction:
         logger.debug(f'press_keys {press_keys}, {press_modifiers}')
         keyboard.send(ser, (press_keys[0], press_keys[1], press_keys[2], press_keys[3], press_keys[4], press_keys[5]),
                       press_modifiers)
+
+    @staticmethod
+    def mouse_absolute_press(ser: Serial, button: str = "left", x: int = 0, y: int = 0) -> None:
+        mouse.send_data_absolute(ser, x, y, button)
+
+    @staticmethod
+    def mouse_relative_press(ser: Serial, button: str = "left", x: int = 0, y: int = 0) -> None:
+        mouse.send_data_relative(ser, x, y, button)
 
 
 class ControllerCh9329:
@@ -151,14 +159,18 @@ class ControllerCh9329:
             mouse.move(self.serial_connection, x, y, True, self.screen_x, self.screen_y)
             logger.debug(f'mouse relative move to : {x} {y}')
 
-    def mouse_button_press(self, button_name: str) -> True:
+    def mouse_button_press(self, button_name: str, x: int = 0, y: int = 0, relative: bool = False) -> True:
         with self.connection_mutex:
             if self.serial_connection is None:
                 return False
             if self.serial_connection.is_open is False:
                 return False
             if button_name in self.MOUSE_BUTTON_NAME:
-                mouse.press(self.serial_connection, button_name)
+                # mouse.press(self.serial_connection, button_name)
+                if relative is False:
+                    Ch9329AttachFunction.mouse_absolute_press(self.serial_connection, button_name, x, y)
+                else:
+                    Ch9329AttachFunction.mouse_relative_press(self.serial_connection, button_name, x, y)
                 logger.debug(f'mouse button press: {button_name}')
             else:
                 logger.debug(f'unknown mouse button press: {button_name}')
@@ -231,7 +243,7 @@ class ControllerCh9329:
                 return False
             if self.serial_connection.is_open is False:
                 return False
-            Ch9329KeyboardAttachFunction.trigger_keys(self.serial_connection, keys, function_keys)
+            Ch9329AttachFunction.trigger_keys(self.serial_connection, keys, function_keys)
             logger.debug(f'keyboard keys press : {keys}')
         return True
 

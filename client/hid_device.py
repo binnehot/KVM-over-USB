@@ -169,13 +169,9 @@ def hid_mouse_event(buffer):
             hid_mouse_absolute_move(buffer)
         else:
             # 包含鼠标点击事件
-            hid_mouse_press(buffer)
+            hid_mouse_absolute_press(buffer)
             time.sleep(GLOBAL_CONTROLLER.random_interval())
             hid_mouse_release(buffer)
-            if (buffer[4] == 0) and (buffer[5] == 0) and (buffer[6] == 0) and (buffer[7] == 0):
-                pass
-            else:
-                hid_mouse_absolute_move(buffer)
         if buffer[8] != 0:
             hid_mouse_wheel(buffer[8])
     # 相对坐标模式
@@ -183,13 +179,9 @@ def hid_mouse_event(buffer):
         if buffer[3] == 0:
             hid_mouse_relative_move(buffer)
         else:
-            hid_mouse_press(buffer)
+            hid_mouse_relative_press(buffer)
             time.sleep(GLOBAL_CONTROLLER.random_interval())
             hid_mouse_release(buffer)
-            if (buffer[4] == 0) and (buffer[5] == 0) and (buffer[6] == 0) and (buffer[7] == 0):
-                pass
-            else:
-                hid_mouse_relative_move(buffer)
         if buffer[6] != 0:
             hid_mouse_wheel(buffer[6])
     else:
@@ -224,13 +216,32 @@ def hid_mouse_relative_move(buffer):
         logger.debug(f"mouse_relative_move_to : {x_hid} {y_hid}")
 
 
-def hid_mouse_press(buffer):
+def hid_mouse_absolute_press(buffer):
+    x = ((buffer[5] & 0xFF) << 8) + buffer[4]
+    xx = int(x / 0x7FFF * GLOBAL_CONTROLLER.screen_x)
+    y = ((buffer[7] & 0xFF) << 8) + buffer[6]
+    yy = int(y / 0x7FFF * GLOBAL_CONTROLLER.screen_y)
     if buffer[3] == 1:
-        GLOBAL_CONTROLLER.mouse_button_press('left')
+        GLOBAL_CONTROLLER.mouse_button_press('left', xx, yy)
     elif buffer[3] == 2:
-        GLOBAL_CONTROLLER.mouse_button_press('right')
+        GLOBAL_CONTROLLER.mouse_button_press('right', xx, yy)
     elif buffer[3] == 4:
-        GLOBAL_CONTROLLER.mouse_button_press('middle')
+        GLOBAL_CONTROLLER.mouse_button_press('middle', xx, yy)
+    else:
+        if __DEBUG_MODE__ < DebugMode.FILTER_MOUSE_PRESS:
+            logger.debug(f"hid_mouse_press: unknown mouse button {buffer[3]}")
+
+
+def hid_mouse_relative_press(buffer):
+    x = 0
+    y = 0
+
+    if buffer[3] == 1:
+        GLOBAL_CONTROLLER.mouse_button_press('left', x, y, True)
+    elif buffer[3] == 2:
+        GLOBAL_CONTROLLER.mouse_button_press('right', x, y, True)
+    elif buffer[3] == 4:
+        GLOBAL_CONTROLLER.mouse_button_press('middle', x, y, True)
     else:
         if __DEBUG_MODE__ < DebugMode.FILTER_MOUSE_PRESS:
             logger.debug(f"hid_mouse_press: unknown mouse button {buffer[3]}")
