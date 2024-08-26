@@ -247,8 +247,7 @@ class ControllerCh9329:
             logger.debug(f'keyboard keys press : {keys}')
         return True
 
-    def keyboard_key_click(self, key_name: str, function_keys: list, min_interval: int = 0.1,
-                           max_interval: int = 0.5) -> bool:
+    def keyboard_key_click(self, key_name: str, function_keys: list) -> bool:
         status: bool = self.keyboard_key_press(key_name, function_keys)
         if status is False:
             return status
