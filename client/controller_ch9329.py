@@ -222,7 +222,6 @@ class ControllerCh9329:
 
     def release(self, device_type: str = 'all'):
         if device_type == 'mouse':
-            self.mouse_send_data('null')
             mouse.release(self.serial_connection)
         elif device_type == 'keyboard':
             keyboard.release(self.serial_connection)
