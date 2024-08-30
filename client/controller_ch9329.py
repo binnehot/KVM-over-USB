@@ -14,6 +14,7 @@ from ch9329.keyboard import Modifier
 from loguru import logger
 from serial import Serial
 from serial import SerialException
+from ch9329.config import get_product
 
 __DEBUG__ = False
 SELF_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -45,28 +46,8 @@ class Ch9329AttachFunction:
             press_modifiers
         )
 
-    @staticmethod
-    def mouse_absolute_press(
-            ser: Serial, button: str = "left",
-            x: int = 0, y: int = 0,
-            monitor_width: int = 1920,
-            monitor_height: int = 1080
-    ) -> None:
-        mouse.send_data_absolute(
-            ser, x, y, button, monitor_width,
-            monitor_height
-        )
-
-    @staticmethod
-    def mouse_relative_press(
-            ser: Serial, button: str = "left",
-            x: int = 0, y: int = 0
-    ) -> None:
-        mouse.send_data_relative(ser, x, y, button)
-
 
 class ControllerCh9329:
-    MOUSE_BUTTON_NAME: list[str] = ['left', 'right', 'middle']
 
     def __init__(
             self, controller_port: str = 'COM1',
@@ -158,109 +139,49 @@ class ControllerCh9329:
     def random_interval(self) -> float:
         return random.uniform(self.min_interval, self.max_interval)
 
+    def product_info(self) -> str:
+        info = ''
+        with self.connection_mutex:
+            if self.serial_connection is None:
+                return info
+            if self.serial_connection.is_open is False:
+                return info
+            info = get_product(self.serial_connection)
+        return info
+
+    # 恢复出厂设置
+    def restore_factory_settings(self):
+        cmd_restore_packet = b'\x57\xab\x00\x0c\x00\x0e'
+        with self.connection_mutex:
+            if self.serial_connection is None:
+                return False
+            if self.serial_connection.is_open is False:
+                return False
+            self.serial_connection.write(cmd_restore_packet)
+
+    # 复位芯片
     def reset_controller(self):
-        cmd_reset_packet = (b'\x57' + b'\xab' + b'\x00' + b'\x0f' + b'\x00' +
-                            b'\x11')
+        cmd_reset_packet = b'\x57\xab\x00\x0f\x00\x11'
         with self.connection_mutex:
             if self.serial_connection is None:
                 return False
             if self.serial_connection.is_open is False:
                 return False
             self.serial_connection.write(cmd_reset_packet)
-            controller_info = self.serial_connection.readline()
-            if len(controller_info) >= 6:
-                logger.debug(
-                    f'ch9329 reset command return: {keyboard_info[5]}', )
-                if keyboard_info[5] == 0:
-                    logger.debug('reset_controller succeed')
 
-    def mouse_absolute_move_to(self, x: int, y: int):
-        assert x <= 4096
-        assert y <= 4096
+    def mouse_send_data(self, button_name: str, x: int = 0,
+                        y: int = 0,
+                        wheel: int = 0,
+                        relative: bool = False):
         with self.connection_mutex:
             if self.serial_connection is None:
                 return False
             if self.serial_connection.is_open is False:
                 return False
-            mouse.move(
-                self.serial_connection, x, y, False,
-                self.screen_x, self.screen_y
-            )
-            logger.debug(f'mouse absolute move to : {x} {y}')
-
-    def mouse_relative_move_to(self, x: int, y: int):
-        assert -128 <= x <= 127
-        assert -128 <= y <= 127
-        with self.connection_mutex:
-            if self.serial_connection is None:
-                return False
-            if self.serial_connection.is_open is False:
-                return False
-            mouse.move(
-                self.serial_connection, x, y, True,
-                self.screen_x, self.screen_y
-            )
-            logger.debug(f'mouse relative move to : {x} {y}')
-
-    def mouse_button_press(
-            self, button_name: str, x: int = 0,
-            y: int = 0,
-            relative: bool = False
-    ) -> True:
-        with self.connection_mutex:
-            if self.serial_connection is None:
-                return False
-            if self.serial_connection.is_open is False:
-                return False
-            if button_name in self.MOUSE_BUTTON_NAME:
-                # mouse.press(self.serial_connection, button_name)
-                if relative is False:
-                    Ch9329AttachFunction.mouse_absolute_press(
-                        self.serial_connection, button_name, x, y,
-                        self.screen_x,
-                        self.screen_y
-                    )
-                else:
-                    Ch9329AttachFunction.mouse_relative_press(
-                        self.serial_connection, button_name, x, y
-                    )
-                logger.debug(f'mouse button press: {button_name}')
+            if relative is False:
+                mouse.send_data_absolute(self.serial_connection, x, y, button_name, self.screen_x, self.screen_y, wheel)
             else:
-                logger.debug(
-                    f'unknown mouse button press: {button_name}'
-                )
-        return True
-
-    def mouse_button_release(self) -> bool:
-        with self.connection_mutex:
-            if self.serial_connection is None:
-                return False
-            if self.serial_connection.is_open is False:
-                return False
-            mouse.release(self.serial_connection)
-        return True
-
-    def mouse_button_click(self, button_name: str) -> bool:
-        status: bool = self.mouse_button_press(button_name)
-        if status is False:
-            return status
-        time.sleep(self.random_interval())
-        status = self.mouse_button_release()
-        return status
-
-    def mouse_wheel(self, wheel: int) -> bool:
-        with self.connection_mutex:
-            if self.serial_connection is None:
-                return False
-            if self.serial_connection.is_open is False:
-                return False
-            if wheel == 1:
-                mouse.wheel(self.serial_connection, 1)
-            elif wheel == -1:
-                mouse.wheel(self.serial_connection, -1)
-            else:
-                logger.debug(f'Incorrect wheel value {wheel}')
-        return True
+                mouse.send_data_relative(self.serial_connection, x, y, button_name, wheel)
 
     def convert_hid_key_code_to_ch9329_key_code(
             self,
@@ -275,32 +196,6 @@ class ControllerCh9329:
             ch9329_key = ''
         return ch9329_key
 
-    def keyboard_key_press(self, key_name: str, function_keys: list):
-        with self.connection_mutex:
-            if self.serial_connection is None:
-                return False
-            if self.serial_connection.is_open is False:
-                return False
-            if self.press_key_map.get(key_name, None) is None:
-                keyboard.press(
-                    self.serial_connection, key_name,
-                    function_keys
-                )
-                self.press_key_map[key_name] = True
-                logger.debug(f'keyboard key press : {key_name}')
-        return True
-
-    def keyboard_key_release(self):
-        with self.connection_mutex:
-            if self.serial_connection is None:
-                return False
-            if self.serial_connection.is_open is False:
-                return False
-            keyboard.release(self.serial_connection)
-            self.press_key_map.clear()
-            logger.debug(f'keyboard key release')
-        return True
-
     def keyboard_keys_trigger(self, keys: list, function_keys: list):
         with self.connection_mutex:
             if self.serial_connection is None:
@@ -314,23 +209,8 @@ class ControllerCh9329:
             logger.debug(f'keyboard keys press : {keys}')
         return True
 
-    def keyboard_key_click(
-            self, key_name: str,
-            function_keys: list
-    ) -> bool:
-        status: bool = self.keyboard_key_press(
-            key_name,
-            function_keys
-        )
-        if status is False:
-            return status
-        time.sleep(self.random_interval())
-        status = self.keyboard_key_release()
-        return status
-
     def keyboard_light_status(self):
-        cmd_get_info_packet = (b'\x57' + b'\xab' + b'\x00' + b'\x01' + b'\x00'
-                               + b'\x03')
+        cmd_get_info_packet = b'\x57\xab\x00\x01\x00\x03'
         __clear_buffer__: bytes = self.serial_connection.readall()
         g_serial_connection.write(cmd_get_info_packet)
         buffer: bytes = self.serial_connection.readline()
@@ -340,14 +220,15 @@ class ControllerCh9329:
         logger.debug(f'keyboard status 0x{keyboard_light_status:02x}')
         return keyboard_light_status
 
-    def release_devices_input(self, device_type: str):
+    def release(self, device_type: str = 'all'):
         if device_type == 'mouse':
-            self.mouse_button_release()
+            self.mouse_send_data('null')
+            mouse.release(self.serial_connection)
         elif device_type == 'keyboard':
-            self.keyboard_key_release()
+            keyboard.release(self.serial_connection)
         elif device_type == 'all':
-            self.mouse_button_release()
-            self.keyboard_key_release()
+            mouse.release(self.serial_connection)
+            keyboard.release(self.serial_connection)
         else:
             logger.debug(f'unknown device type: {device_type}')
 

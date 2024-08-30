@@ -5,6 +5,7 @@ from enum import IntEnum, auto
 from loguru import logger
 
 from controller_ch9329 import Controller
+from controller_ch9329 import Ch9329AttachFunction
 
 if os.name == "nt":  # sys.platform == 'win32':
     from serial.tools.list_ports_windows import comports as list_comports
@@ -17,8 +18,7 @@ else:
 class DebugMode(IntEnum):
     FILTER_NONE = auto()
     FILTER_HID = auto()
-    FILTER_MOUSE_MOVE = auto()
-    FILTER_MOUSE_PRESS = auto()
+    FILTER_MOUSE_DATA = auto()
     FILTER_MOUSE = auto()
     FILTER_KEYBOARD = auto()
     FILTER_ALL = auto()
@@ -58,6 +58,9 @@ def init_usb(controller_port: str, baud: int = 9600, screen_x: int = 1920, scree
     GLOBAL_CONTROLLER.set_connection_params(controller_port, baud, screen_x, screen_y)
     status = GLOBAL_CONTROLLER.create_connection()
     if status is True:
+        info = GLOBAL_CONTROLLER.product_info()
+        if __DEBUG_MODE__ < DebugMode.FILTER_ALL:
+            logger.debug(f"controller product info: {info}")
         return 0
     else:
         return 1
@@ -100,7 +103,7 @@ def hid_event(buffer: list, read_mode: bool = False):
             # GLOBAL_CONTROLLER.reset_controller()
         case 5:
             if ((buffer[5] == 30) | (buffer[3] == 30)) & (buffer[4] == 30):
-                GLOBAL_CONTROLLER.release_devices_input('all')
+                GLOBAL_CONTROLLER.release('all')
             else:
                 if __DEBUG_MODE__ <= DebugMode.FILTER_HID:
                     logger.debug("hid_event: reset keyboard and mouse code error")
@@ -150,7 +153,6 @@ def hid_keyboard_key_button_event(buffer):
         hid_key_code = buffer[i]
         if hid_key_code == 0:
             # 按键弹起
-            # GLOBAL_CONTROLLER.keyboard_key_release()
             keys.append("")
         else:
             # 根据hid找keyname
@@ -162,108 +164,92 @@ def hid_keyboard_key_button_event(buffer):
 
 
 def hid_mouse_event(buffer):
+    if __DEBUG_MODE__ < DebugMode.FILTER_MOUSE_DATA:
+        logger.debug(f"hid_mouse_event: {buffer}")
     # 绝对坐标模式
     if buffer[1] == 2:
-        if buffer[3] == 0:
-            # 鼠标移动事件
-            hid_mouse_absolute_move(buffer)
-        else:
-            # 包含鼠标点击事件
-            hid_mouse_absolute_press(buffer)
-            time.sleep(GLOBAL_CONTROLLER.random_interval())
-            hid_mouse_release(buffer)
-        if buffer[8] != 0:
-            hid_mouse_wheel(buffer[8])
+        hid_mouse_send_absolute_data(buffer)
     # 相对坐标模式
     elif buffer[1] == 7:
-        if buffer[3] == 0:
-            hid_mouse_relative_move(buffer)
-        else:
-            hid_mouse_relative_press(buffer)
-            time.sleep(GLOBAL_CONTROLLER.random_interval())
-            hid_mouse_release(buffer)
-        if buffer[6] != 0:
-            hid_mouse_wheel(buffer[6])
+        hid_mouse_send_relative_data(buffer)
     else:
         if __DEBUG_MODE__ < DebugMode.FILTER_MOUSE:
-            logger.debug(f"hid_mouse_event: unknown buffer {buffer[1]}")
+            logger.debug(f"hid_mouse_event: {buffer}")
 
 
-def hid_mouse_absolute_move(buffer):
+def hid_mouse_send_absolute_data(buffer):
+    wheel = buffer[8]
+
     x = ((buffer[5] & 0xFF) << 8) + buffer[4]
     xx = int(x / 0x7FFF * GLOBAL_CONTROLLER.screen_x)
     y = ((buffer[7] & 0xFF) << 8) + buffer[6]
     yy = int(y / 0x7FFF * GLOBAL_CONTROLLER.screen_y)
-    GLOBAL_CONTROLLER.mouse_absolute_move_to(xx, yy)
-    if __DEBUG_MODE__ < DebugMode.FILTER_MOUSE_MOVE:
-        logger.debug(f"mouse_absolute_move_to : {xx} {yy}")
+
+    assert xx <= 4096
+    assert yy <= 4096
+
+    if wheel == 255:
+        # 滚轮向上
+        wheel = -1
+    elif wheel == 1:
+        # 滚轮向下
+        wheel = 1
+    else:
+        # 滚轮不动
+        wheel = 0
+
+    if buffer[3] == 0:
+        GLOBAL_CONTROLLER.mouse_send_data('null', xx, yy, wheel, False)
+    elif buffer[3] == 1:
+        GLOBAL_CONTROLLER.mouse_send_data('left', xx, yy, wheel, False)
+    elif buffer[3] == 2:
+        GLOBAL_CONTROLLER.mouse_send_data('right', xx, yy, wheel, False)
+    elif buffer[3] == 4:
+        GLOBAL_CONTROLLER.mouse_send_data('center', xx, yy, wheel, False)
+    else:
+        if __DEBUG_MODE__ < DebugMode.FILTER_MOUSE_PRESS:
+            logger.debug(f"hid_mouse_send_absolute_data: unknown mouse button {buffer[3]}")
 
 
-def hid_mouse_relative_move(buffer):
-    x_hid = buffer[4]
-    y_hid = buffer[5]
-    x_hid -= 0xFF if x_hid > 127 else 0
-    y_hid -= 0xFF if y_hid > 127 else 0
+def hid_mouse_send_relative_data(buffer):
+    x = buffer[4]
+    y = buffer[5]
+    wheel = buffer[6]
+
+    # 计算坐标
+    x -= 0xFF if x > 127 else 0
+    y -= 0xFF if y > 127 else 0
 
     # 加速移动鼠标需要放大坐标
-    if -128 <= x_hid * 2 <= 127:
-        x_hid = x_hid * 2
-    if -128 <= y_hid * 2 <= 127:
-        y_hid = y_hid * 2
+    if -128 <= x * 2 <= 127:
+        x = x * 2
+    if -128 <= y * 2 <= 127:
+        y = y * 2
 
-    GLOBAL_CONTROLLER.mouse_relative_move_to(x_hid, y_hid)
-    if __DEBUG_MODE__ < DebugMode.FILTER_MOUSE_MOVE:
-        logger.debug(f"mouse_relative_move_to : {x_hid} {y_hid}")
+    assert -128 <= x <= 127
+    assert -128 <= y <= 127
 
+    if wheel == 255:
+        # 滚轮向上
+        wheel = -1
+    elif wheel == 1:
+        # 滚轮向下
+        wheel = 1
+    else:
+        # 滚轮不动
+        wheel = 0
 
-def hid_mouse_absolute_press(buffer):
-    x = ((buffer[5] & 0xFF) << 8) + buffer[4]
-    xx = int(x / 0x7FFF * GLOBAL_CONTROLLER.screen_x)
-    y = ((buffer[7] & 0xFF) << 8) + buffer[6]
-    yy = int(y / 0x7FFF * GLOBAL_CONTROLLER.screen_y)
-    if buffer[3] == 1:
-        GLOBAL_CONTROLLER.mouse_button_press('left', xx, yy)
+    if buffer[3] == 0:
+        GLOBAL_CONTROLLER.mouse_send_data('null', x, y, wheel, True)
+    elif buffer[3] == 1:
+        GLOBAL_CONTROLLER.mouse_send_data('left', x, y, wheel, True)
     elif buffer[3] == 2:
-        GLOBAL_CONTROLLER.mouse_button_press('right', xx, yy)
+        GLOBAL_CONTROLLER.mouse_send_data('right', x, y, wheel, True)
     elif buffer[3] == 4:
-        GLOBAL_CONTROLLER.mouse_button_press('middle', xx, yy)
+        GLOBAL_CONTROLLER.mouse_send_data('center', x, y, wheel, True)
     else:
         if __DEBUG_MODE__ < DebugMode.FILTER_MOUSE_PRESS:
-            logger.debug(f"hid_mouse_press: unknown mouse button {buffer[3]}")
-
-
-def hid_mouse_relative_press(buffer):
-    x = 0
-    y = 0
-
-    if buffer[3] == 1:
-        GLOBAL_CONTROLLER.mouse_button_press('left', x, y, True)
-    elif buffer[3] == 2:
-        GLOBAL_CONTROLLER.mouse_button_press('right', x, y, True)
-    elif buffer[3] == 4:
-        GLOBAL_CONTROLLER.mouse_button_press('middle', x, y, True)
-    else:
-        if __DEBUG_MODE__ < DebugMode.FILTER_MOUSE_PRESS:
-            logger.debug(f"hid_mouse_press: unknown mouse button {buffer[3]}")
-
-
-def hid_mouse_release(buffer):
-    if buffer[3] == 1 or buffer[3] == 2 or buffer[3] == 4:
-        # time.sleep(random.uniform(0.1, 0.45))
-        GLOBAL_CONTROLLER.mouse_button_release()
-    else:
-        if __DEBUG_MODE__ < DebugMode.FILTER_MOUSE_PRESS:
-            logger.debug(f"hid_mouse_release: buffer error {buffer[3]}")
-
-
-def hid_mouse_wheel(value):
-    if value == 1:
-        GLOBAL_CONTROLLER.mouse_wheel(1)
-    elif value == 255:
-        GLOBAL_CONTROLLER.mouse_wheel(-1)
-    else:
-        if __DEBUG_MODE__ < DebugMode.FILTER_MOUSE_PRESS:
-            logger.debug(f"hid_mouse_wheel: incorrect value {value}")
+            logger.debug(f"hid_mouse_send_relative_data: unknown mouse button {buffer[3]}")
 
 
 if __name__ == "__main__":
