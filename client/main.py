@@ -309,7 +309,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             self.video_config = self.configfile["video_config"]
             self.audio_config = self.configfile["audio_config"]
             self.controller_config = self.configfile["controller_config"]
-            self.fullscreen_key = getattr(Qt, f'Key_{self.config["fullscreen_key"]}')
+            self.fullscreen_key = getattr(Qt.Key, f'Key_{self.config["fullscreen_key"]}')
             self.relative_mouse_speed = self.config["relative_mouse_speed"]
             if self.config["mouse_report_freq"] != 0:
                 self.mouse_report_interval = 1000 / self.config["mouse_report_freq"]
@@ -1151,7 +1151,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         self.status["mouse_capture"] = True
         self.statusbar_icon3.setPixmap(load_pixmap("mouse"))
         self.statusBar().showMessage(
-            self.tr("Mouse capture on (Press Right-Ctrl to release)")
+            self.tr("Mouse capture on (Press Ctrl+Alt+F12 to release)")
         )
         self.set_ws2812b(0, 30, 30)
 
@@ -1906,7 +1906,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
                 alert = QMessageBox(self)
                 alert.setWindowTitle(self.tr("Fullscreen"))
                 alert.setText(
-                    self.tr("Press Ctrl+Alt+Shift+")
+                    self.tr("Press Ctrl+Alt+")
                     + f"{self.config['fullscreen_key']} "
                     + self.tr("to toggle fullscreen")
                     + self.tr("\n(Key ")
@@ -2287,10 +2287,18 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             return
         if event.isAutoRepeat():
             return
-        # Ctrl+Alt+Shift+F11 退出全屏
-        if kb_buffer[2] == 7 and event.key() == self.fullscreen_key:
-            self.fullscreen_func()
-            return
+        keyboard_modifiers = event.modifiers()
+        keyboard_key = event.key()
+        # Ctrl+Alt+F11 退出全屏
+        if keyboard_modifiers == (Qt.KeyboardModifier.ControlModifier | Qt.KeyboardModifier.AltModifier):
+            if keyboard_key == self.fullscreen_key:
+                self.fullscreen_func()
+                return
+            elif keyboard_key == Qt.Key.Key_F12:
+                # self.relative_mouse_func()
+                self.release_mouse()
+                self.statusBar().showMessage(self.tr("Mouse capture off"))
+                return
         self.keyPress(event.nativeScanCode())
 
     def keyPress(self, scancode: int):
@@ -2307,9 +2315,6 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             )
             self.paste_board_send(text)
             return
-        if scancode == 285:  # Right Ctrl
-            self.release_mouse()
-            self.statusBar().showMessage(self.tr("Mouse capture off"))
         self.update_kb(scancode, True)
         self.shortcut_status(kb_buffer)
 
