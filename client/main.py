@@ -4,6 +4,8 @@ import re
 import sys
 import tempfile
 import time
+import ctypes
+import platform
 from typing import Tuple
 
 # from PySide6 import *
@@ -2289,11 +2291,13 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             return
         keyboard_modifiers = event.modifiers()
         keyboard_key = event.key()
-        # Ctrl+Alt+F11 退出全屏
+
         if keyboard_modifiers == (Qt.KeyboardModifier.ControlModifier | Qt.KeyboardModifier.AltModifier):
+            # Ctrl+Alt+F11 退出全屏
             if keyboard_key == self.fullscreen_key:
                 self.fullscreen_func()
                 return
+            # Ctrl+Alt+F12 关闭鼠标捕获
             elif keyboard_key == Qt.Key.Key_F12:
                 # self.relative_mouse_func()
                 self.release_mouse()
@@ -2404,7 +2408,19 @@ def command_line_parser():
     debug_mode(args.debug)
 
 
+def os_init():
+    system_name = platform.system().lower()
+    if system_name == "windows":  # sys.platform == 'win32':
+        app_id = 'open_source_software.usb_kvm_client.gui.1'
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(app_id)
+    elif system_name == "linux":
+        pass
+    else:
+        pass
+
+
 def main():
+    os_init()
     command_line_parser()
     create_default_config_file()
     load_config_file()
