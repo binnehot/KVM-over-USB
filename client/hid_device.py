@@ -118,21 +118,21 @@ def hid_event(buffer: list, read_mode: bool = False):
 # 按键事件
 def hid_keyboard_key_event(buffer):
     status_code: int = 0
-    replay: list = list()
+    reply: list = list()
     if buffer[1] == 1:
         hid_keyboard_key_button_event(buffer)
     elif buffer[1] == 3:
-        replay = [3, 0, 0]
-        status, replay[2] = GLOBAL_CONTROLLER.keyboard_light_status()
+        reply = [3, 0, 0]
+        status, reply[2] = GLOBAL_CONTROLLER.keyboard_light_status()
         if status is False:
-            replay[0] = 1
+            reply[0] = 1
         if __DEBUG_MODE__ < DebugMode.FILTER_KEYBOARD:
-            logger.debug(f"Reporting the Keyboard indicator lights status: {replay[2]}")
+            logger.debug(f"Reporting the Keyboard indicator lights status: {reply[2]}")
     else:
         if __DEBUG_MODE__ < DebugMode.FILTER_KEYBOARD:
             logger.debug(f"hid_keyboard_key_event : unknown buffer {buffer[1]}")
         status_code = 1
-    return status_code, replay
+    return status_code, reply
 
 
 def hid_keyboard_key_button_event(buffer):
