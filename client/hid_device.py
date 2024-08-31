@@ -75,7 +75,7 @@ def check_connection() -> bool:
 # 返回非0值为失败或特殊含义
 def hid_event(buffer: list, read_mode: bool = False):
     status_code: int = 0
-    replay: list = list()
+    reply: list = list()
     if __DEBUG_MODE__ < DebugMode.FILTER_HID:
         logger.debug(f"hid_report(buffer={buffer}, read_mode={read_mode})")
         # return status_code, replay
@@ -83,7 +83,7 @@ def hid_event(buffer: list, read_mode: bool = False):
         status_code = 1
         if __DEBUG_MODE__ < DebugMode.FILTER_KEYBOARD:
             logger.debug(f"hid_event : check connection failed.")
-        return status_code, replay
+        return status_code, reply
     buffer = buffer[-1:] + buffer[:-1]
     buffer[0] = 0
     # buffer[1] 为信息类型判断标志
@@ -95,7 +95,7 @@ def hid_event(buffer: list, read_mode: bool = False):
         case 7:
             hid_mouse_event(buffer)
         case 3:
-            status_code, replay = hid_keyboard_key_event(buffer)
+            status_code, reply = hid_keyboard_key_event(buffer)
         case 4:
             if __DEBUG_MODE__ <= DebugMode.FILTER_HID:
                 logger.debug("hid_event: reload MCU")
@@ -112,7 +112,7 @@ def hid_event(buffer: list, read_mode: bool = False):
             if __DEBUG_MODE__ < DebugMode.FILTER_HID:
                 logger.debug(f"hid_event: unknown buffer {buffer[1]}")
             status_code = 1
-    return status_code, replay
+    return status_code, reply
 
 
 # 按键事件
@@ -123,7 +123,9 @@ def hid_keyboard_key_event(buffer):
         hid_keyboard_key_button_event(buffer)
     elif buffer[1] == 3:
         replay = [3, 0, 0]
-        replay[2] = GLOBAL_CONTROLLER.keyboard_light_status()
+        status, replay[2] = GLOBAL_CONTROLLER.keyboard_light_status()
+        if status is False:
+            replay[0] = 1
         if __DEBUG_MODE__ < DebugMode.FILTER_KEYBOARD:
             logger.debug(f"Reporting the Keyboard indicator lights status: {replay[2]}")
     else:

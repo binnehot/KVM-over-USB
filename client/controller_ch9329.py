@@ -210,15 +210,22 @@ class ControllerCh9329:
         return True
 
     def keyboard_light_status(self):
-        cmd_get_info_packet = b'\x57\xab\x00\x01\x00\x03'
-        __clear_buffer__: bytes = self.serial_connection.readall()
-        g_serial_connection.write(cmd_get_info_packet)
-        buffer: bytes = self.serial_connection.readline()
+        status: bool = False
         keyboard_light_status: int = 0
-        if len(buffer) == 14:
-            keyboard_light_status = buffer[8]
-        logger.debug(f'keyboard status 0x{keyboard_light_status:02x}')
-        return keyboard_light_status
+        with self.connection_mutex:
+            if self.serial_connection is None:
+                return status, keyboard_light_status
+            if self.serial_connection.is_open is False:
+                return status, keyboard_light_status
+            cmd_get_info_packet = b'\x57\xab\x00\x01\x00\x03'
+            __clear_buffer__: bytes = self.serial_connection.readall()
+            self.serial_connection.write(cmd_get_info_packet)
+            buffer: bytes = self.serial_connection.readall()
+            if len(buffer) == 14:
+                keyboard_light_status = buffer[7]
+                status = True
+            logger.debug(f'keyboard status 0x{keyboard_light_status:02x}')
+            return status, keyboard_light_status
 
     def release(self, device_type: str = 'all'):
         if device_type == 'mouse':

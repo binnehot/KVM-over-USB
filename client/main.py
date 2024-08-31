@@ -1548,7 +1548,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             self.statusbar_lable4.setStyleSheet("color: grey")
 
     def update_indicatorLight(self) -> None:
-        reply = hid_device.hid_event([3, 0], True)
+        status_code, reply = hid_device.hid_event([3, 0], True)
         if reply == 1 or reply == 2 or reply == 3 or reply == 4:
             self.device_event_handle("hid_error")
             self.indicator_timer.stop()
