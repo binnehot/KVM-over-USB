@@ -87,7 +87,7 @@ class ControllerCh9329:
 
     def load_hid_code_key(self, file_path: str):
         try:
-            with open(file_path, 'r') as load_f:
+            with open(file_path, 'r', encoding='utf-8') as load_f:
                 self.ch9329_code2key = yaml.safe_load(load_f)
                 # logger.debug('load ch9329_code2key succeed')
         except FileNotFoundError:

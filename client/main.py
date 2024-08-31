@@ -293,16 +293,16 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         # 导入外部数据
         try:
             with open(
-                    os.path.join(PATH, "data", "keyboard_hid2code.yaml"), "r"
+                    os.path.join(PATH, "data", "keyboard_hid2code.yaml"), "r", encoding='utf-8'
             ) as load_f:
                 self.keyboard_hid2code = yaml.safe_load(load_f)
             with open(
-                    os.path.join(PATH, "data", "keyboard_scancode2hid.yml"), "r"
+                    os.path.join(PATH, "data", "keyboard_scancode2hid.yml"), "r", encoding='utf-8'
             ) as load_f:
                 self.keyboard_scancode2hid = yaml.safe_load(load_f)
-            with open(os.path.join(PATH, "data", "keyboard.yaml"), "r") as load_f:
+            with open(os.path.join(PATH, "data", "keyboard.yaml"), "r", encoding='utf-8') as load_f:
                 self.keyboard_code = yaml.safe_load(load_f)
-            with open(os.path.join(ARGV_PATH, "config.yaml"), "r") as load_f:
+            with open(os.path.join(ARGV_PATH, "config.yaml"), "r", encoding='utf-8') as load_f:
                 self.configfile = yaml.safe_load(load_f)
             self.config = self.configfile["config"]
             self.video_record_config = self.configfile["video_record_config"]
