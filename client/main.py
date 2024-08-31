@@ -49,23 +49,23 @@ shift_symbol = [
 
 def create_default_config_file():
     if not os.path.exists(os.path.join(ARGV_PATH, "config.yaml")):
-        with open(os.path.join(ARGV_PATH, "config.yaml"), "w") as f:
+        with open(os.path.join(ARGV_PATH, "config.yaml"), "w", encoding='utf-8') as f:
             f.write(default_config)
 
 
 def load_config_file():
     global config
     global translation
-    with open(os.path.join(ARGV_PATH, "config.yaml"), "r") as load_f:
+    with open(os.path.join(ARGV_PATH, "config.yaml"), "r", encoding='utf-8') as load_f:
         config = yaml.safe_load(load_f)["config"]
         translation = config["translation"]
 
 
-def str_bool(b) -> str:
-    if not translation:
-        return str(b)
+def bool_to_behavior_string(value: bool) -> str:
+    if value:
+        return QtCore.QObject.tr("Enable")
     else:
-        return "启用" if b else "禁用"
+        return QtCore.QObject.tr("Disable")
 
 
 def strB2Q(uchar):
@@ -1209,7 +1209,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             self.resize(self.width(), self.height() + 1)
         self.statusBar().showMessage(
             self.tr("Keep aspect ratio: ")
-            + str_bool(self.video_config["keep_aspect_ratio"])
+            + bool_to_behavior_string(self.video_config["keep_aspect_ratio"])
         )
         self.save_config()
 
@@ -1640,14 +1640,14 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         self.status["quick_paste"] = not self.status["quick_paste"]
         self.set_checked(self.actionQuick_paste, self.status["quick_paste"])
         self.statusBar().showMessage(
-            self.tr("Quick paste: ") + str_bool(self.status["quick_paste"])
+            self.tr("Quick paste: ") + bool_to_behavior_string(self.status["quick_paste"])
         )
 
     def system_hook_func(self):
         self.hook_state = not self.hook_state
         self.set_checked(self.actionSystem_hook, self.hook_state)
         self.statusBar().showMessage(
-            self.tr("System hook: ") + str_bool(self.hook_state)
+            self.tr("System hook: ") + bool_to_behavior_string(self.hook_state)
         )
         if self.hook_state:
             self.pythoncom_timer.start(5)
@@ -1663,7 +1663,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         self.set_checked(self.actionRelative_mouse, self.status["relative_mouse"])
         # self.reset_keymouse(3)
         self.statusBar().showMessage(
-            self.tr("Relative mouse: ") + str_bool(self.status["relative_mouse"])
+            self.tr("Relative mouse: ") + bool_to_behavior_string(self.status["relative_mouse"])
         )
 
     # 粘贴板
@@ -1943,7 +1943,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             self.set_checked(self.actionHide_cursor, False)
         self.statusBar().showMessage(
             self.tr("Hide cursor when capture mouse: ")
-            + str_bool(self.status["hide_cursor"])
+            + bool_to_behavior_string(self.status["hide_cursor"])
         )
 
     # 保持窗口在最前
@@ -1954,7 +1954,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         )
         self.show()
         self.statusBar().showMessage(
-            self.tr("Window always on top: ") + str_bool(self.status["topmost"])
+            self.tr("Window always on top: ") + bool_to_behavior_string(self.status["topmost"])
         )
         self.set_checked(self.actionKeep_on_top, self.status["topmost"])
 
