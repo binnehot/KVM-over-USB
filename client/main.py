@@ -65,9 +65,9 @@ def load_config_file():
 
 def bool_to_behavior_string(value: bool) -> str:
     if value:
-        return QObject.tr("Enable")
+        return QObject().tr("Enable")
     else:
-        return QObject.tr("Disable")
+        return QObject().tr("Disable")
 
 
 def strB2Q(uchar):
