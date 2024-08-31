@@ -513,7 +513,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         self.actionCapture_mouse.triggered.connect(self.capture_mouse)
         self.actionResetKeyboard.triggered.connect(lambda: self.reset_keymouse(1))
         self.actionResetMouse.triggered.connect(lambda: self.reset_keymouse(3))
-        self.actionIndicator_light.triggered.connect(self.indicatorLight_func)
+        self.actionIndicator_light.triggered.connect(self.indicator_light_func)
         self.actionReload_MCU.triggered.connect(lambda: self.reset_keymouse(2))
 
         self.actionPaste_board.triggered.connect(self.paste_board_func)
@@ -578,7 +578,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         self.mouse_action_timer = QTimer()
         self.mouse_action_timer.timeout.connect(self.mouse_action_timeout)
         self.indicator_timer = QTimer()
-        self.indicator_timer.timeout.connect(self.update_indicatorLight)
+        self.indicator_timer.timeout.connect(self.update_indicator_light)
         self.check_device_timer = QTimer()
         self.check_device_timer.timeout.connect(self.check_device_status)
         self.check_device_timer.start(1000)
@@ -671,7 +671,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             if self.indicator_dialog.isVisible():
                 self.indicator_dialog.close()
             else:
-                self.indicatorLight_func()
+                self.indicator_light_func()
         elif act == 4:
             if self.numkeyboard_dialog.isVisible():
                 self.numkeyboard_dialog.close()
@@ -1547,9 +1547,9 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         else:
             self.statusbar_lable4.setStyleSheet("color: grey")
 
-    def update_indicatorLight(self) -> None:
+    def update_indicator_light(self) -> None:
         status_code, reply = hid_device.hid_event([3, 0], True)
-        if reply == 1 or reply == 2 or reply == 3 or reply == 4:
+        if status_code != 0:
             self.device_event_handle("hid_error")
             self.indicator_timer.stop()
             return
@@ -1571,24 +1571,24 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         else:
             self.numkeyboard_dialog.pushButton_1.setText("Num\nLock")
 
-    def indicatorLight_func(self):
-        self.update_indicatorLight()
+    def indicator_light_func(self):
+        self.update_indicator_light()
         if self.indicator_dialog.isVisible():
             self.indicator_dialog.activateWindow()
             return
-        addheight = 0
+        add_height = 0
         if not self.status["fullscreen"]:
-            addheight += 34
+            add_height += 34
         wm_pos = self.geometry()
         wm_size = self.size()
         if self.paste_board_dialog.isVisible():
-            addheight += self.paste_board_dialog.height() + 30
+            add_height += self.paste_board_dialog.height() + 30
         if self.shortcut_key_dialog.isVisible():
-            addheight += self.shortcut_key_dialog.height() + 30
+            add_height += self.shortcut_key_dialog.height() + 30
         self.indicator_dialog.move(
             wm_pos.x() + (wm_size.width() - self.indicator_dialog.width()),
             wm_pos.y()
-            + (wm_size.height() - self.indicator_dialog.height() - 30 - addheight),
+            + (wm_size.height() - self.indicator_dialog.height() - 30 - add_height),
         )
         self.indicator_timer.start(500)
         self.indicator_dialog.exec()
@@ -1896,7 +1896,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         self.qt_sleep(50)
         self.update_kb_hid(key_code, False)
         self.qt_sleep(50)
-        self.update_indicatorLight()
+        self.update_indicator_light()
 
     # 全屏幕切换
     def fullscreen_func(self):
