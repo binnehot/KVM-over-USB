@@ -198,6 +198,9 @@
    <property name="text">
     <string>Release mouse</string>
    </property>
+   <property name="statusTip">
+    <string>Press Ctrl+Alt+F12 release mouse</string>
+   </property>
   </action>
   <action name="actionDisplay_System_Mouse">
    <property name="text">
@@ -377,7 +380,7 @@
     <string>Quick paste</string>
    </property>
    <property name="statusTip">
-    <string>Click Ctrl+Shift+Alt+V to quickly send your pasteboard</string>
+    <string>Press Ctrl+Alt+V to quickly send clipboard contents</string>
    </property>
   </action>
   <action name="actionWindows_Audio_Setting">
