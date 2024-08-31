@@ -198,8 +198,8 @@ class HidThread(QThread):
         self._hid_signal.connect(self.hid_event)
 
     def hid_event(self, buf):
-        hidinfo = hid_device.hid_event(buf)
-        if hidinfo == 1 or hidinfo == 4:
+        status_code, hid_reply = hid_device.hid_event(buf)
+        if status_code != 0:
             self._event_signal.emit("hid_error")
 
 
@@ -1222,19 +1222,19 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         if s == 1:  # keyboard
             for i in range(2, len(kb_buffer)):
                 kb_buffer[i] = 0
-            hidinfo = hid_device.hid_event(kb_buffer)
-            if hidinfo == 1 or hidinfo == 4:
+            status_code, hid_reply = hid_device.hid_event(kb_buffer)
+            if status_code != 0:
                 self.device_event_handle("hid_error")
-            elif hidinfo == 0:
+            else:
                 self.device_event_handle("hid_ok")
             self.shortcut_status(kb_buffer)
         elif s == 2:  # MCU
             self.set_ws2812b(255, 0, 0)
             self.qt_sleep(100)
-            hidinfo = hid_device.hid_event([4, 0])
-            if hidinfo == 1 or hidinfo == 4:
+            status_code, hid_reply = hid_device.hid_event([4, 0])
+            if status_code != 0:
                 self.device_event_handle("hid_error")
-            elif hidinfo == 0:
+            else:
                 self.device_event_handle("hid_ok")
             self.statusbar_icon2.setPixmap(load_pixmap("keyboard-off"))
             self.status["mouse_capture"] = False
@@ -1244,11 +1244,11 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
                 mouse_buffer[i] = 0
             for i in range(2, len(mouse_buffer_rel)):
                 mouse_buffer[i] = 0
-            hidinfo = hid_device.hid_event(mouse_buffer)
-            hidinfo = hid_device.hid_event(mouse_buffer_rel)
-            if hidinfo == 1 or hidinfo == 4:
+            status_code, hid_reply = hid_device.hid_event(mouse_buffer)
+            status_code, hid_reply = hid_device.hid_event(mouse_buffer_rel)
+            if status_code != 0:
                 self.device_event_handle("hid_error")
-            elif hidinfo == 0:
+            else:
                 self.device_event_handle("hid_ok")
         elif s == 4:  # hid
             hid_code = hid_device.init_usb(
@@ -2069,8 +2069,8 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         self.mouse_action_timer.stop()
 
     def hid_report(self, buf: list[int]):
-        hidinfo = hid_device.hid_event(buf)
-        if hidinfo == 1 or hidinfo == 4:
+        status_code, hid_reply = hid_device.hid_event(buf)
+        if status_code != 0:
             self.device_event_handle("hid_error")
 
     # 鼠标移动事件
