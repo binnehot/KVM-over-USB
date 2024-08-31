@@ -15,7 +15,7 @@ pyside6-essentials = "^6.7.2"
 pyside6 = "^6.7.2"
 pywinhook = "^1.6.2"
 pyserial = "^3.5"
-ch9329 = "^1.2.6"
+ch9329 = "^1.2.7"
 nuitka = "^2.4.8"
 
 
