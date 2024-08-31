@@ -643,7 +643,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             scan_code = event.ScanCode
         if scan_code not in self.hook_pressed_keys:
             self.hook_pressed_keys.append(scan_code)
-            self.keyPress(scan_code)
+            self.key_press(scan_code)
         return False
 
     def hook_keyboard_up_event(self, event):
@@ -651,7 +651,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             scan_code = self.code_remap[event.Key]
         else:
             scan_code = event.ScanCode
-        self.keyRelease(scan_code)
+        self.key_release(scan_code)
         try:
             self.hook_pressed_keys.remove(scan_code)
         except ValueError:
@@ -1645,6 +1645,18 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             self.tr("Quick paste: ") + bool_to_behavior_string(self.status["quick_paste"])
         )
 
+    def quick_paste_trigger(self):
+        # 获取剪贴板内容
+        clipboard = QApplication.clipboard()
+        text = clipboard.text()
+        if len(text) == 0:
+            self.statusBar().showMessage(self.tr("Clipboard is empty"))
+            return
+        self.statusBar().showMessage(
+            self.tr("Quick pasting") + f" {len(text)} " + self.tr("characters")
+        )
+        self.paste_board_send(text)
+
     def system_hook_func(self):
         self.hook_state = not self.hook_state
         self.set_checked(self.actionSystem_hook, self.hook_state)
@@ -2293,32 +2305,26 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         keyboard_key = event.key()
 
         if keyboard_modifiers == (Qt.KeyboardModifier.ControlModifier | Qt.KeyboardModifier.AltModifier):
+            is_register_function_keys: bool = True
             # Ctrl+Alt+F11 退出全屏
             if keyboard_key == self.fullscreen_key:
                 self.fullscreen_func()
-                return
             # Ctrl+Alt+F12 关闭鼠标捕获
             elif keyboard_key == Qt.Key.Key_F12:
                 # self.relative_mouse_func()
                 self.release_mouse()
                 self.statusBar().showMessage(self.tr("Mouse capture off"))
+            # Ctrl+Alt+V quick paste
+            elif keyboard_key == Qt.Key.Key_V and self.status["quick_paste"]:
+                self.quick_paste_trigger()
+            else:
+                is_register_function_keys = False
+            # 如果是已注册的功能键则不传递给被控端
+            if is_register_function_keys:
                 return
-        self.keyPress(event.nativeScanCode())
+        self.key_press(event.nativeScanCode())
 
-    def keyPress(self, scancode: int):
-        # Ctrl+Alt+Shift+V quick paste
-        if kb_buffer[2] == 7 and scancode == 0x002F and self.status["quick_paste"]:
-            # 获取剪贴板内容
-            clipboard = QApplication.clipboard()
-            text = clipboard.text()
-            if len(text) == 0:
-                self.statusBar().showMessage(self.tr("Clipboard is empty"))
-                return
-            self.statusBar().showMessage(
-                self.tr("Quick pasting") + f" {len(text)} " + self.tr("characters")
-            )
-            self.paste_board_send(text)
-            return
+    def key_press(self, scancode: int):
         self.update_kb(scancode, True)
         self.shortcut_status(kb_buffer)
 
@@ -2328,9 +2334,9 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             return
         if self.ignore_event:
             return
-        self.keyRelease(event.nativeScanCode())
+        self.key_release(event.nativeScanCode())
 
-    def keyRelease(self, scancode: int):
+    def key_release(self, scancode: int):
         self.update_kb(scancode, False)
         self.shortcut_status(kb_buffer)
 
