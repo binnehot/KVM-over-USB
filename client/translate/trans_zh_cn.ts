@@ -835,7 +835,7 @@ or delete the config.yaml to reset the config file.</source>
     </message>
     <message>
         <location filename="../main.py" line="691"/>
-        <location filename="../main.py" line="2317"/>
+        <location filename="../main.py" line="2320"/>
         <source>Mouse capture off</source>
         <translation>鼠标捕捉关闭</translation>
     </message>
@@ -962,130 +962,135 @@ or delete the config.yaml to reset the config file.</source>
         <translation>键鼠设备初始化成功</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1486"/>
+        <location filename="../main.py" line="1487"/>
+        <source>Keyboard Mouse connect ok</source>
+        <translation>键盘鼠标连接完毕</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="1489"/>
         <source>Video device connected</source>
         <translation>视频设备已连接</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1494"/>
-        <location filename="../main.py" line="1501"/>
+        <location filename="../main.py" line="1497"/>
+        <location filename="../main.py" line="1504"/>
         <source>Device disconnect</source>
         <translation>设备连接断开</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1559"/>
+        <location filename="../main.py" line="1562"/>
         <source>Indicator reply error</source>
         <translation>指示灯状态返回异常</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1645"/>
+        <location filename="../main.py" line="1648"/>
         <source>Quick paste: </source>
         <translation>快速粘贴： </translation>
     </message>
     <message>
-        <location filename="../main.py" line="1664"/>
+        <location filename="../main.py" line="1667"/>
         <source>System hook: </source>
         <translation>系统按键拦截： </translation>
     </message>
     <message>
-        <location filename="../main.py" line="1680"/>
+        <location filename="../main.py" line="1683"/>
         <source>Relative mouse: </source>
         <translation>相对鼠标模式： </translation>
     </message>
     <message>
-        <location filename="../main.py" line="1730"/>
+        <location filename="../main.py" line="1733"/>
         <source>Select file</source>
         <translation>选择文件</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1804"/>
+        <location filename="../main.py" line="1807"/>
         <source>Paste board - Sending</source>
         <translation>剪贴板 - 发送中</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1810"/>
-        <location filename="../main.py" line="1876"/>
+        <location filename="../main.py" line="1813"/>
+        <location filename="../main.py" line="1879"/>
         <source>Paste board - Error occurred</source>
         <translation>剪贴板 - 发送错误</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1815"/>
-        <location filename="../main.py" line="1882"/>
+        <location filename="../main.py" line="1818"/>
+        <location filename="../main.py" line="1885"/>
         <source>Paste board - Force stopped</source>
         <translation>剪贴板 - 已停止</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1818"/>
-        <location filename="../main.py" line="1892"/>
+        <location filename="../main.py" line="1821"/>
+        <location filename="../main.py" line="1895"/>
         <source>Paste board - Finished</source>
         <translation>剪贴板 - 发送完成</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1849"/>
+        <location filename="../main.py" line="1852"/>
         <source>Paste board - Sending file</source>
         <translation>剪贴板 - 文件发送中</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1921"/>
+        <location filename="../main.py" line="1924"/>
         <source>Fullscreen</source>
         <translation>全屏</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1924"/>
+        <location filename="../main.py" line="1927"/>
         <source>Press Ctrl+Alt+</source>
         <translation>按下 Ctrl+Alt+</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1926"/>
+        <location filename="../main.py" line="1929"/>
         <source>to toggle fullscreen</source>
         <translation>来切换全屏模式</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1927"/>
+        <location filename="../main.py" line="1930"/>
         <source>
 (Key </source>
         <translation>
 （按键 </translation>
     </message>
     <message>
-        <location filename="../main.py" line="1929"/>
+        <location filename="../main.py" line="1932"/>
         <source>can be changed in config.yaml)</source>
         <translation>可以在配置文件中修改）</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1930"/>
+        <location filename="../main.py" line="1933"/>
         <source>
 Stay cursor at left top corner to show toolbar</source>
         <translation>
 保持鼠标指针在屏幕边角来显示工具栏</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1932"/>
+        <location filename="../main.py" line="1935"/>
         <source>I know it, don&apos;t show again</source>
         <translation>我知道了，不要再提示</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1960"/>
+        <location filename="../main.py" line="1963"/>
         <source>Hide cursor when capture mouse: </source>
         <translation>隐藏鼠标指针： </translation>
     </message>
     <message>
-        <location filename="../main.py" line="1971"/>
+        <location filename="../main.py" line="1974"/>
         <source>Window always on top: </source>
         <translation>窗口置顶： </translation>
     </message>
     <message>
-        <location filename="../main.py" line="2019"/>
+        <location filename="../main.py" line="2022"/>
         <source>Double click to capture mouse</source>
         <translation>双击鼠标左键启用鼠标捕捉</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2192"/>
+        <location filename="../main.py" line="2195"/>
         <source>Press Ctrl+Alt+F12 to release mouse</source>
         <translation>按下 Ctrl+Alt+F12 释放鼠标</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1653"/>
+        <location filename="../main.py" line="1656"/>
         <source>Clipboard is empty</source>
         <translation>剪贴板是空的</translation>
     </message>
@@ -1095,12 +1100,12 @@ Stay cursor at left top corner to show toolbar</source>
         <translation>鼠标捕获打开（按下 Ctrl+Alt+F12 释放）</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1656"/>
+        <location filename="../main.py" line="1659"/>
         <source>Quick pasting</source>
         <translation>正在快速粘贴</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1657"/>
+        <location filename="../main.py" line="1660"/>
         <source>characters</source>
         <translation>个字符</translation>
     </message>
