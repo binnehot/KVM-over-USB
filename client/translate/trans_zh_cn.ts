@@ -2,6 +2,19 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="zh_CN">
 <context>
+    <name></name>
+    <message>
+        <location filename="../main.py" line="69"/>
+        <source>Enable</source>
+        <translation>启用</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="73"/>
+        <source>Disable</source>
+        <translation>禁用</translation>
+    </message>
+</context>
+<context>
     <name>AboutDialog</name>
     <message>
         <location filename="../ui/about.ui" line="14"/>
@@ -528,7 +541,7 @@ del</source>
     </message>
     <message>
         <location filename="../ui/main.ui" line="103"/>
-        <location filename="../ui/main.ui" line="434"/>
+        <location filename="../ui/main.ui" line="437"/>
         <source>About</source>
         <translation>关于</translation>
     </message>
@@ -564,7 +577,7 @@ del</source>
     </message>
     <message>
         <location filename="../ui/main.ui" line="164"/>
-        <location filename="../ui/main.ui" line="312"/>
+        <location filename="../ui/main.ui" line="315"/>
         <source>Resize window</source>
         <translation>重设窗口大小</translation>
     </message>
@@ -600,203 +613,208 @@ del</source>
         <translation>释放鼠标</translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="204"/>
+        <location filename="../ui/main.ui" line="202"/>
+        <source>Press Ctrl+Alt+F12 release mouse</source>
+        <translation>按下 Ctrl+Alt+F12 释放鼠标</translation>
+    </message>
+    <message>
+        <location filename="../ui/main.ui" line="207"/>
         <source>Display system mouse</source>
         <translation>显示系统鼠标</translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="209"/>
+        <location filename="../ui/main.ui" line="212"/>
         <source>Capture mouse</source>
         <translation>捕捉鼠标</translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="214"/>
+        <location filename="../ui/main.ui" line="217"/>
         <source>Custom key</source>
         <translation>自定义按键</translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="219"/>
+        <location filename="../ui/main.ui" line="222"/>
         <source>q1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="224"/>
+        <location filename="../ui/main.ui" line="227"/>
         <source>q2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="229"/>
+        <location filename="../ui/main.ui" line="232"/>
         <source>q3</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="234"/>
+        <location filename="../ui/main.ui" line="237"/>
         <source>q4</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="239"/>
+        <location filename="../ui/main.ui" line="242"/>
         <source>q5</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="244"/>
+        <location filename="../ui/main.ui" line="247"/>
         <source>q6</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="249"/>
+        <location filename="../ui/main.ui" line="252"/>
         <source>q7</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="254"/>
-        <location filename="../ui/main.ui" line="259"/>
+        <location filename="../ui/main.ui" line="257"/>
+        <location filename="../ui/main.ui" line="262"/>
         <source>q8</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="264"/>
+        <location filename="../ui/main.ui" line="267"/>
         <source>q9</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="269"/>
+        <location filename="../ui/main.ui" line="272"/>
         <source>q10</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="274"/>
+        <location filename="../ui/main.ui" line="277"/>
         <source>On-screen Keyboard</source>
         <translation>虚拟键盘</translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="279"/>
+        <location filename="../ui/main.ui" line="282"/>
         <source>Calculator</source>
         <translation>计算器</translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="284"/>
+        <location filename="../ui/main.ui" line="287"/>
         <source>SnippingTool</source>
         <translation>截图工具</translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="289"/>
+        <location filename="../ui/main.ui" line="292"/>
         <source>Notepad</source>
         <translation>记事本</translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="294"/>
+        <location filename="../ui/main.ui" line="297"/>
         <source>Indicator light</source>
         <translation>键盘指示灯</translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="299"/>
+        <location filename="../ui/main.ui" line="302"/>
         <source>Reload MCU</source>
         <translation>重载MCU</translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="307"/>
+        <location filename="../ui/main.ui" line="310"/>
         <source>Fullscreen</source>
         <translation>全屏</translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="320"/>
+        <location filename="../ui/main.ui" line="323"/>
         <source>Keep aspect ratio</source>
         <translation>按比例缩放</translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="328"/>
+        <location filename="../ui/main.ui" line="331"/>
         <source>Always on top</source>
         <translation>窗口置顶</translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="333"/>
+        <location filename="../ui/main.ui" line="336"/>
         <source>Pasteboard</source>
         <translation>剪贴板</translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="341"/>
+        <location filename="../ui/main.ui" line="344"/>
         <source>Hide cursor</source>
         <translation>隐藏鼠标指针</translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="346"/>
+        <location filename="../ui/main.ui" line="349"/>
         <source>Caps Lock</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="351"/>
+        <location filename="../ui/main.ui" line="354"/>
         <source>Scroll Lock</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="356"/>
+        <location filename="../ui/main.ui" line="359"/>
         <source>Num Lock</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="364"/>
+        <location filename="../ui/main.ui" line="367"/>
         <source>Dark theme</source>
         <translation>夜间主题</translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="369"/>
+        <location filename="../ui/main.ui" line="372"/>
         <source>Capture frame</source>
         <translation>屏幕截图</translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="377"/>
+        <location filename="../ui/main.ui" line="380"/>
         <source>Quick paste</source>
         <translation>快速粘贴</translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="380"/>
-        <source>Click Ctrl+Shift+Alt+V to quickly send your pasteboard</source>
-        <translation>使用 Ctrl+Shift+Alt+V 来快速粘贴剪贴板</translation>
+        <location filename="../ui/main.ui" line="383"/>
+        <source>Press Ctrl+Alt+V to quickly send clipboard contents</source>
+        <translation>按下 Ctrl+Alt+V 快速发送剪贴板内容</translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="385"/>
+        <location filename="../ui/main.ui" line="388"/>
         <source>Windows Audio Settings</source>
         <translation>系统音频设置</translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="390"/>
+        <location filename="../ui/main.ui" line="393"/>
         <source>Windows Device Manager</source>
         <translation>设备管理器</translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="395"/>
+        <location filename="../ui/main.ui" line="398"/>
         <source>Num Keyboard</source>
         <translation>数字小键盘</translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="400"/>
+        <location filename="../ui/main.ui" line="403"/>
         <source>Record video</source>
         <translation>视频录制</translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="408"/>
+        <location filename="../ui/main.ui" line="411"/>
         <source>System hook</source>
         <translation>系统按键拦截</translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="411"/>
+        <location filename="../ui/main.ui" line="414"/>
         <source>Blocks the system from responding to user input</source>
         <translation>阻止系统响应按键输入</translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="419"/>
+        <location filename="../ui/main.ui" line="422"/>
         <source>Relative mouse</source>
         <translation>相对鼠标模式</translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="424"/>
+        <location filename="../ui/main.ui" line="427"/>
         <source>Control setup</source>
         <translation>控制器设置</translation>
     </message>
     <message>
-        <location filename="../ui/main.ui" line="429"/>
+        <location filename="../ui/main.ui" line="432"/>
         <source>About Qt</source>
         <translation>关于Qt</translation>
     </message>
@@ -804,280 +822,280 @@ del</source>
 <context>
     <name>MyMainWindow</name>
     <message>
-        <location filename="../main.py" line="323"/>
+        <location filename="../main.py" line="325"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="../main.py" line="327"/>
+        <location filename="../main.py" line="329"/>
         <source>Check the config.yaml and restart the program
 or delete the config.yaml to reset the config file.</source>
         <translation>检查配置文件（config.yaml）并重启程序
 或删除配置文件，程序将重新生成。</translation>
     </message>
     <message>
-        <location filename="../main.py" line="689"/>
-        <location filename="../main.py" line="2312"/>
+        <location filename="../main.py" line="691"/>
+        <location filename="../main.py" line="2316"/>
         <source>Mouse capture off</source>
         <translation>鼠标捕捉关闭</translation>
     </message>
     <message>
-        <location filename="../main.py" line="835"/>
+        <location filename="../main.py" line="837"/>
         <source>Selected invalid device</source>
         <translation>选择设备无效</translation>
     </message>
     <message>
-        <location filename="../main.py" line="854"/>
-        <location filename="../main.py" line="865"/>
+        <location filename="../main.py" line="856"/>
+        <location filename="../main.py" line="867"/>
         <source>auto</source>
         <translation>自动</translation>
     </message>
     <message>
-        <location filename="../main.py" line="892"/>
-        <location filename="../main.py" line="958"/>
+        <location filename="../main.py" line="894"/>
+        <location filename="../main.py" line="960"/>
         <source>Target video device not found</source>
         <translation>目标视频设备未找到</translation>
     </message>
     <message>
-        <location filename="../main.py" line="919"/>
+        <location filename="../main.py" line="921"/>
         <source>Device disconnected</source>
         <translation>设备已断开连接</translation>
     </message>
     <message>
-        <location filename="../main.py" line="946"/>
+        <location filename="../main.py" line="948"/>
         <source>Device Error</source>
         <translation>设备错误</translation>
     </message>
     <message>
-        <location filename="../main.py" line="972"/>
+        <location filename="../main.py" line="974"/>
         <source>Unsupported combination of resolution and format</source>
         <translation>不支持的分辨率和图像格式组合</translation>
     </message>
     <message>
-        <location filename="../main.py" line="999"/>
+        <location filename="../main.py" line="1001"/>
         <source>Audio device not found</source>
         <translation>音频设备未找到</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1007"/>
+        <location filename="../main.py" line="1009"/>
         <source>Video device connect failed</source>
         <translation>视频设备连接失败</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1075"/>
+        <location filename="../main.py" line="1077"/>
         <source>Video save location</source>
         <translation>选择视频保存位置</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1084"/>
+        <location filename="../main.py" line="1086"/>
         <source>Stop recording</source>
         <translation>停止录制</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1085"/>
+        <location filename="../main.py" line="1087"/>
         <source>Video recording started</source>
         <translation>视频录制已开始</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1089"/>
+        <location filename="../main.py" line="1091"/>
         <source>Record video</source>
         <translation>视频录制</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1090"/>
+        <location filename="../main.py" line="1092"/>
         <source>Video recording stopped</source>
         <translation>视频录制已停止</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1096"/>
+        <location filename="../main.py" line="1098"/>
         <source>Save Frame</source>
         <translation>选择截图保存位置</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1102"/>
+        <location filename="../main.py" line="1104"/>
         <source>Image saved to</source>
         <translation>截图已保存至</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1106"/>
+        <location filename="../main.py" line="1108"/>
         <source>Video Error</source>
         <translation>视频设备错误</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1155"/>
-        <source>Mouse capture on (Press Right-Ctrl to release)</source>
-        <translation>鼠标捕捉启用 （按下右 Ctrl 键释放鼠标）</translation>
-    </message>
-    <message>
-        <location filename="../main.py" line="1212"/>
+        <location filename="../main.py" line="1214"/>
         <source>Keep aspect ratio: </source>
         <translation>按比例缩放： </translation>
     </message>
     <message>
-        <location filename="../main.py" line="1280"/>
+        <location filename="../main.py" line="1282"/>
         <source>Save shortcut key</source>
         <translation>保存快捷键</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1281"/>
+        <location filename="../main.py" line="1283"/>
         <source>Shortcut name:</source>
         <translation>快捷键名称：</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1450"/>
+        <location filename="../main.py" line="1452"/>
         <source>Keyboard Mouse connect error, try to &lt;Reload Key/Mouse&gt;</source>
         <translation>键鼠设备连接错误，请尝试重置设备</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1457"/>
+        <location filename="../main.py" line="1459"/>
         <source>Video device error</source>
         <translation>视频设备错误</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1462"/>
+        <location filename="../main.py" line="1464"/>
         <source>Video device close</source>
         <translation>视频设备断开</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1470"/>
+        <location filename="../main.py" line="1472"/>
         <source>Keyboard Mouse initialization error</source>
         <translation>键鼠设备初始化失败</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1475"/>
+        <location filename="../main.py" line="1477"/>
         <source>Keyboard Mouse initialization done</source>
         <translation>键鼠设备初始化成功</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1484"/>
+        <location filename="../main.py" line="1486"/>
         <source>Video device connected</source>
         <translation>视频设备已连接</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1492"/>
-        <location filename="../main.py" line="1499"/>
+        <location filename="../main.py" line="1494"/>
+        <location filename="../main.py" line="1501"/>
         <source>Device disconnect</source>
         <translation>设备连接断开</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1557"/>
+        <location filename="../main.py" line="1559"/>
         <source>Indicator reply error</source>
         <translation>指示灯状态返回异常</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1643"/>
+        <location filename="../main.py" line="1645"/>
         <source>Quick paste: </source>
         <translation>快速粘贴： </translation>
     </message>
     <message>
-        <location filename="../main.py" line="1650"/>
+        <location filename="../main.py" line="1664"/>
         <source>System hook: </source>
         <translation>系统按键拦截： </translation>
     </message>
     <message>
-        <location filename="../main.py" line="1666"/>
+        <location filename="../main.py" line="1680"/>
         <source>Relative mouse: </source>
         <translation>相对鼠标模式： </translation>
     </message>
     <message>
-        <location filename="../main.py" line="1716"/>
+        <location filename="../main.py" line="1730"/>
         <source>Select file</source>
         <translation>选择文件</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1790"/>
+        <location filename="../main.py" line="1804"/>
         <source>Paste board - Sending</source>
         <translation>剪贴板 - 发送中</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1796"/>
-        <location filename="../main.py" line="1862"/>
+        <location filename="../main.py" line="1810"/>
+        <location filename="../main.py" line="1876"/>
         <source>Paste board - Error occurred</source>
         <translation>剪贴板 - 发送错误</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1801"/>
-        <location filename="../main.py" line="1868"/>
+        <location filename="../main.py" line="1815"/>
+        <location filename="../main.py" line="1882"/>
         <source>Paste board - Force stopped</source>
         <translation>剪贴板 - 已停止</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1804"/>
-        <location filename="../main.py" line="1878"/>
+        <location filename="../main.py" line="1818"/>
+        <location filename="../main.py" line="1892"/>
         <source>Paste board - Finished</source>
         <translation>剪贴板 - 发送完成</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1835"/>
+        <location filename="../main.py" line="1849"/>
         <source>Paste board - Sending file</source>
         <translation>剪贴板 - 文件发送中</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1907"/>
+        <location filename="../main.py" line="1921"/>
         <source>Fullscreen</source>
         <translation>全屏</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1910"/>
-        <source>Press Ctrl+Alt+Shift+</source>
-        <translation>按下 Ctrl+Alt+Shift+</translation>
+        <location filename="../main.py" line="1924"/>
+        <source>Press Ctrl+Alt+</source>
+        <translation>按下 Ctrl+Alt+</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1912"/>
+        <location filename="../main.py" line="1926"/>
         <source>to toggle fullscreen</source>
         <translation>来切换全屏模式</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1913"/>
+        <location filename="../main.py" line="1927"/>
         <source>
 (Key </source>
         <translation>
 （按键 </translation>
     </message>
     <message>
-        <location filename="../main.py" line="1915"/>
+        <location filename="../main.py" line="1929"/>
         <source>can be changed in config.yaml)</source>
         <translation>可以在配置文件中修改）</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1916"/>
+        <location filename="../main.py" line="1930"/>
         <source>
 Stay cursor at left top corner to show toolbar</source>
         <translation>
 保持鼠标指针在屏幕边角来显示工具栏</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1918"/>
+        <location filename="../main.py" line="1932"/>
         <source>I know it, don&apos;t show again</source>
         <translation>我知道了，不要再提示</translation>
     </message>
     <message>
-        <location filename="../main.py" line="1946"/>
+        <location filename="../main.py" line="1960"/>
         <source>Hide cursor when capture mouse: </source>
         <translation>隐藏鼠标指针： </translation>
     </message>
     <message>
-        <location filename="../main.py" line="1957"/>
+        <location filename="../main.py" line="1971"/>
         <source>Window always on top: </source>
         <translation>窗口置顶： </translation>
     </message>
     <message>
-        <location filename="../main.py" line="2005"/>
+        <location filename="../main.py" line="2019"/>
         <source>Double click to capture mouse</source>
         <translation>双击鼠标左键启用鼠标捕捉</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2303"/>
+        <location filename="../main.py" line="1653"/>
         <source>Clipboard is empty</source>
         <translation>剪贴板是空的</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2306"/>
+        <location filename="../main.py" line="1157"/>
+        <source>Mouse capture on (Press Ctrl+Alt+F12 to release)</source>
+        <translation>鼠标捕获打开（按下 Ctrl+Alt+F12 释放）</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="1656"/>
         <source>Quick pasting</source>
         <translation>正在快速粘贴</translation>
     </message>
     <message>
-        <location filename="../main.py" line="2307"/>
+        <location filename="../main.py" line="1657"/>
         <source>characters</source>
         <translation>个字符</translation>
     </message>
