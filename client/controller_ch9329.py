@@ -11,6 +11,7 @@ from ch9329 import keyboard
 from ch9329 import mouse
 from ch9329.config import get_product
 from ch9329.keyboard import Modifier
+import ch9329.exceptions
 from loguru import logger
 from serial import Serial
 from serial import SerialException
@@ -145,7 +146,10 @@ class ControllerCh9329:
                 return info
             if self.serial_connection.is_open is False:
                 return info
-            info = get_product(self.serial_connection)
+            try:
+                info = get_product(self.serial_connection)
+            except ch9329.exceptions.ProtocolError:
+                info = ""
         return info
 
     # 恢复出厂设置
