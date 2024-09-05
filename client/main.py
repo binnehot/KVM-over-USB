@@ -2189,6 +2189,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             else:
                 self._last_mouse_pos = middle_pos
                 QCursor.setPos(middle_pos)
+            self.statusBar().showMessage(f"Press Ctrl+Alt+F12 to release mouse")
 
     def mouse_report_timeout(self):
         if self._new_mouse_report == 1:
@@ -2390,23 +2391,27 @@ def clear_splash():
 
 
 def debug_mode(mode: bool):
+    # 移除logger handler
+    logger.remove()
     if mode is True:
-        hid_device.debug_mode(hid_device.DebugMode.FILTER_NONE)
+        logger.add(
+            sys.stdout,
+            # :{function}:{line}
+            format="{time:YYYY-MM-DD HH:mm:ss.SSS} - {level} - {name} - {message}",
+            level="DEBUG",
+        )
     else:
-        # 非debug模式屏蔽所有debug输出
-        logger.remove()
         logger.add(
             sys.stdout,
             # :{function}:{line}
             format="{time:YYYY-MM-DD HH:mm:ss.SSS} - {level} - {name} - {message}",
             level="INFO",
         )
-        hid_device.debug_mode(hid_device.DebugMode.FILTER_ALL)
 
 
 def command_line_parser():
     parser = argparse.ArgumentParser(description='USB KVM Client')
-    parser.add_argument('--debug', action='store_true',
+    parser.add_argument('-d', '--debug', action='store_true',
                         default=False,
                         help='Debug mode (default: disable)')
 

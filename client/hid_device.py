@@ -15,22 +15,14 @@ else:
     raise ImportError("Sorry: no implementation for your platform {} available".format(os.name))
 
 
-class DebugMode(IntEnum):
-    FILTER_NONE = auto()
-    FILTER_HID = auto()
-    FILTER_MOUSE_DATA = auto()
-    FILTER_MOUSE = auto()
-    FILTER_KEYBOARD = auto()
-    FILTER_ALL = auto()
+class DebugOutputOptions(IntEnum):
+    DEVICE: bool = True
+    EVENT: bool = True
+    MOUSE: bool = True
+    KEYBOARD: bool = True
 
 
-__DEBUG_MODE__: DebugMode = DebugMode.FILTER_ALL
 GLOBAL_CONTROLLER: Controller = Controller()
-
-
-def debug_mode(mode: DebugMode):
-    global __DEBUG_MODE__
-    __DEBUG_MODE__ = mode
 
 
 def detect_serial_ports() -> list[str]:
@@ -59,7 +51,7 @@ def init_usb(controller_port: str, baud: int = 9600, screen_x: int = 1920, scree
     status = GLOBAL_CONTROLLER.create_connection()
     if status is True:
         info = GLOBAL_CONTROLLER.product_info()
-        if __DEBUG_MODE__ < DebugMode.FILTER_ALL:
+        if DebugOutputOptions.DEVICE:
             logger.debug(f"controller product info: {info}")
         return 0
     else:
@@ -76,13 +68,13 @@ def check_connection() -> bool:
 def hid_event(buffer: list, read_mode: bool = False):
     status_code: int = 0
     reply: list = list()
-    if __DEBUG_MODE__ < DebugMode.FILTER_HID:
+    if DebugOutputOptions.EVENT:
         logger.debug(f"hid_report(buffer={buffer}, read_mode={read_mode})")
         # return status_code, replay
     if GLOBAL_CONTROLLER.check_connection() is False:
         status_code = 1
-        if __DEBUG_MODE__ < DebugMode.FILTER_KEYBOARD:
-            logger.debug(f"hid_event : check connection failed.")
+        if DebugOutputOptions.DEVICE:
+            logger.debug(f"check connection failed.")
         return status_code, reply
     buffer = buffer[-1:] + buffer[:-1]
     buffer[0] = 0
@@ -97,20 +89,20 @@ def hid_event(buffer: list, read_mode: bool = False):
         case 3:
             status_code, reply = hid_keyboard_key_event(buffer)
         case 4:
-            if __DEBUG_MODE__ <= DebugMode.FILTER_HID:
-                logger.debug("hid_event: reload MCU")
+            if DebugOutputOptions.DEVICE:
+                logger.debug("reload MCU")
             GLOBAL_CONTROLLER.reset_connection()
             # GLOBAL_CONTROLLER.reset_controller()
         case 5:
             if ((buffer[5] == 30) | (buffer[3] == 30)) & (buffer[4] == 30):
                 GLOBAL_CONTROLLER.release('all')
             else:
-                if __DEBUG_MODE__ <= DebugMode.FILTER_HID:
-                    logger.debug("hid_event: reset keyboard and mouse code error")
+                if DebugOutputOptions.DEVICE:
+                    logger.debug("reset keyboard and mouse code error")
                 status_code = 1
         case _:
-            if __DEBUG_MODE__ < DebugMode.FILTER_HID:
-                logger.debug(f"hid_event: unknown buffer {buffer[1]}")
+            if DebugOutputOptions.EVENT:
+                logger.debug(f"unknown buffer {buffer[1]}")
             status_code = 1
     return status_code, reply
 
@@ -126,19 +118,19 @@ def hid_keyboard_key_event(buffer):
         status, reply[2] = GLOBAL_CONTROLLER.keyboard_light_status()
         if status is False:
             reply[0] = 1
-        if __DEBUG_MODE__ < DebugMode.FILTER_KEYBOARD:
+        if DebugOutputOptions.KEYBOARD:
             logger.debug(f"Reporting the Keyboard indicator lights status: {reply[2]}")
     else:
-        if __DEBUG_MODE__ < DebugMode.FILTER_KEYBOARD:
-            logger.debug(f"hid_keyboard_key_event : unknown buffer {buffer[1]}")
+        if DebugOutputOptions.KEYBOARD:
+            logger.debug(f"unknown buffer {buffer[1]}")
         status_code = 1
     return status_code, reply
 
 
 def hid_keyboard_key_button_event(buffer):
-    if __DEBUG_MODE__ < DebugMode.FILTER_KEYBOARD:
+    if DebugOutputOptions.KEYBOARD:
         byte_as_hex = [hex(x).split('x')[-1] for x in list(buffer)]
-        logger.debug(f"hid_keyboard_key_button_event: buffer : {byte_as_hex}")
+        logger.debug(f"buffer : {byte_as_hex}")
     function_keys = []
     if buffer[3] != 0:
         # 存在组合键
@@ -166,8 +158,8 @@ def hid_keyboard_key_button_event(buffer):
 
 
 def hid_mouse_event(buffer):
-    if __DEBUG_MODE__ < DebugMode.FILTER_MOUSE_DATA:
-        logger.debug(f"hid_mouse_event: {buffer}")
+    if DebugOutputOptions.MOUSE:
+        logger.debug(f"buffer: {buffer}")
     # 绝对坐标模式
     if buffer[1] == 2:
         hid_mouse_send_absolute_data(buffer)
@@ -175,8 +167,8 @@ def hid_mouse_event(buffer):
     elif buffer[1] == 7:
         hid_mouse_send_relative_data(buffer)
     else:
-        if __DEBUG_MODE__ < DebugMode.FILTER_MOUSE:
-            logger.debug(f"hid_mouse_event: {buffer}")
+        if DebugOutputOptions.MOUSE:
+            logger.debug(f"buffer: {buffer}")
 
 
 def hid_mouse_send_absolute_data(buffer):
@@ -209,8 +201,8 @@ def hid_mouse_send_absolute_data(buffer):
     elif buffer[3] == 4:
         GLOBAL_CONTROLLER.mouse_send_data('center', xx, yy, wheel, False)
     else:
-        if __DEBUG_MODE__ < DebugMode.FILTER_MOUSE_PRESS:
-            logger.debug(f"hid_mouse_send_absolute_data: unknown mouse button {buffer[3]}")
+        if DebugOutputOptions.MOUSE:
+            logger.debug(f"unknown mouse button {buffer[3]}")
 
 
 def hid_mouse_send_relative_data(buffer):
@@ -222,11 +214,13 @@ def hid_mouse_send_relative_data(buffer):
     x -= 0xFF if x > 127 else 0
     y -= 0xFF if y > 127 else 0
 
+    '''
     # 加速移动鼠标需要放大坐标
     if -128 <= x * 2 <= 127:
         x = x * 2
     if -128 <= y * 2 <= 127:
         y = y * 2
+    '''
 
     assert -128 <= x <= 127
     assert -128 <= y <= 127
@@ -250,8 +244,8 @@ def hid_mouse_send_relative_data(buffer):
     elif buffer[3] == 4:
         GLOBAL_CONTROLLER.mouse_send_data('center', x, y, wheel, True)
     else:
-        if __DEBUG_MODE__ < DebugMode.FILTER_MOUSE_PRESS:
-            logger.debug(f"hid_mouse_send_relative_data: unknown mouse button {buffer[3]}")
+        if DebugOutputOptions.MOUSE:
+            logger.debug(f"unknown mouse button {buffer[3]}")
 
 
 if __name__ == "__main__":
