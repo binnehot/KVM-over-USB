@@ -835,7 +835,7 @@ or delete the config.yaml to reset the config file.</source>
     </message>
     <message>
         <location filename="../main.py" line="691"/>
-        <location filename="../main.py" line="2316"/>
+        <location filename="../main.py" line="2317"/>
         <source>Mouse capture off</source>
         <translation>鼠标捕捉关闭</translation>
     </message>
@@ -1078,6 +1078,11 @@ Stay cursor at left top corner to show toolbar</source>
         <location filename="../main.py" line="2019"/>
         <source>Double click to capture mouse</source>
         <translation>双击鼠标左键启用鼠标捕捉</translation>
+    </message>
+    <message>
+        <location filename="../main.py" line="2192"/>
+        <source>Press Ctrl+Alt+F12 to release mouse</source>
+        <translation>按下 Ctrl+Alt+F12 释放鼠标</translation>
     </message>
     <message>
         <location filename="../main.py" line="1653"/>
