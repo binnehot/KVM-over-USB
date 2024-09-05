@@ -2189,7 +2189,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             else:
                 self._last_mouse_pos = middle_pos
                 QCursor.setPos(middle_pos)
-            self.statusBar().showMessage(f"Press Ctrl+Alt+F12 to release mouse")
+            self.statusBar().showMessage(self.tr(f"Press Ctrl+Alt+F12 to release mouse"))
 
     def mouse_report_timeout(self):
         if self._new_mouse_report == 1:
