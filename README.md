@@ -1,79 +1,104 @@
-# KVM over USB (改)
-一个简单的KVM over USB方案
+# KVM over USB
+一个简单的KVM USB方案
+
+Documentation English Version: https://github.com/wevsty/KVM-over-USB/blob/main/README_en-us.md
 
 ## 简介
-这个项目是沿着这两位老哥走的路，整合出了一个 【便宜】+【又不是不能用】的 **KVM over USB (改)**  方案。
+当服务器因为各种因素失去网络连接时想恢复工作是很困难的事，尽管有IPMI一类的技术可以帮助我们解决问题，但往往这类设备是昂贵的。
+对于家庭用户来说，本方案能帮助你使用其他PC/笔记本电脑通过USB连接快速的管理/维护服务器。
+
+
+## 硬件
+对于大部分用户来说，要求用户自己制造PCB是困难的。
+一个非盈利项目如果要委托制造商生产显然也是困难的。
+所以本项目推荐使用市面上已有的产品进行组合。
+
+
+### 硬件清单
+1. 视频采集卡：可以使用MS2109或MS2130等芯片的视频采集卡，市场售价约为30到100元人民币。
+2. CH340 转 CH9329 的USB连接线：CH340 是一个常见的USB转串口芯片，通过串口接入 CH9329，最终将 CH9329 连接到被控制的设备即可。
+备注1：在购物平台上有成品的线，可直接购买，市场售价约20元人民币。
+备注2：如有特殊需要，也可以自行购入使用其他芯片的USB转串口连接线（比如：FT232）然后购买带有串行接口的 CH9329 模块使用。
+3. HDMI连接线
+4. 如设备没有足够多的USB接口，建议搭配一个USB HUB使用。
+
+
+### 连接原理图
+![image](https://github.com/wevsty/KVM-over-USB/blob/main/document/connection_schematic.svg)
+
+### 硬件实物图
+![image](https://github.com/wevsty/KVM-over-USB/blob/main/document/hardware_photos.jpg)
+
+## 软件
+项目软件客户端基于 [KVM-Card-Mini-PySide6](https://github.com/ElluIFX/KVM-Card-Mini-PySide6) 的源码进行了改动，适配了 CH9329 作为键盘鼠标输入使用。
+
+
+### 客户端编译
+
+假定您已经安装好 git、python、poetry 后您可以执行如下命令进行编译。
+
+```powershell
+git clone https://github.com/wevsty/KVM-over-USB.git
+cd client
+poetry shell
+poetry install
+./compiler.ps1
+```
+
+
+### 客户端下载
+
+请访问 releases 页面下载已编译好的客户端。
+
+注意：目前客户端（控制端）仅提供 Windows 支持。
+
+https://github.com/wevsty/KVM-over-USB/releases
+
+
+### 使用方法
+
+1. 如果您使用的USB转串口芯片为 CH340 ，您可能需要首先安装 CH340 的驱动程序。
+
+CH340 驱动程序下载地址： https://www.wch.cn/downloads/CH341SER_EXE.html
+安装成功后可通过设备管理器查看串口端口号。
+
+![image](https://github.com/wevsty/KVM-over-USB/blob/main/document/device_manager_port.png)
+备注：端口号可能为随机非固定。
+
+2. 执行 usb_kvm_client
+
+视频连接：
+选择设备菜单 -> 视频设备 -> 选择正确的视频采集卡 -> 确定。
+
+![image](https://github.com/wevsty/KVM-over-USB/blob/main/document/video_device_setup.png)
+
+控制器连接：
+
+大部分情况下，默认配置会自动选择串口，但若您的设备上拥有多个串口，您可能需要手动选择串口名称。
+选择设备菜单 -> 控制器设置 -> 选择正确的串口 -> 确定。
+
+![image](https://github.com/wevsty/KVM-over-USB/blob/main/document/controller_device_setup.png)
+
+### 演示
+
+演示控制ASUS BIOS
+
+![image](https://github.com/wevsty/KVM-over-USB/blob/main/document/demo_control_bios.gif)
+
+### FAQ
+
+Q: 为什么被控制端为 Linux 的时候鼠标不工作？
+
+A: 部分操作系统不支持鼠标使用绝对坐标模式，请尝试切换至相对坐标模式进行操作。
+
+Q: 如何发送 Ctrl + Alt + Delete 组合键？
+
+A: 由于 Windows 机制的原因很难拦截此类组合键。如需向被控制端发送这些组合键，请使用键盘菜单中的快捷键功能。
+
+## 感谢
 
 [Jackadminx](https://github.com/Jackadminx)/[KVM-Card-Mini](https://github.com/Jackadminx/KVM-Card-Mini)
 
 [ElluIFX](https://github.com/ElluIFX)/[KVM-Card-Mini-PySide6](https://github.com/ElluIFX/KVM-Card-Mini-PySide6)
 
-## 硬件
-三/四个常规小配件，不用做PCB板，花70多块钱就能搭出这个KVM over USB的方案。
-
-1. 视频采集卡：理论上所有MS2130采集卡都可以  (40-90+元）
-2. CH9329虚拟键盘鼠标usb线：这是采用CH340+CH9329方案的usb转COM，再转USB模拟HID的线  (20元+）
-3. HDMI线：1080P分辨率，没有特别要求  (10元+）
-4. （usb3.0集线器）：如果电脑有两个usb口，可以省略。如果用usb2.0的集线器，也行。
-
-
-【硬件图】
-![image](https://github.com/binnehot/KVM-over-USB/blob/main/image/0_HW_KVM_photo.JPG)
-
-
-【硬件框图】
-![image](https://github.com/binnehot/KVM-over-USB/blob/main/image/1_HW_drawing.png)
-
-
-## 软件
-由于硬件改变，软件需要适配。
-视频采集卡，即插即用，不用改东西。虚拟键鼠usb线，芯片方案都改了，原来的hid_def.py重新写了一遍，还有一个键盘码文件keyboard_ch9329code2Key.yaml。ch9329的python库可以直接pip安装。
-
-[CH9329 芯片串口通信协议]( https://www.wch.cn/uploads/file/20190508/1557278355473027.pdf) 想了解细节的可以看看，其实ch9329的python库都写好了，用就可以了。
-
-## 编译
-
-1、参考项目中的 requirements.txt 或者 pyproject.toml 来安装所需要的 Python 依赖
-
-这里支持并且推荐使用 poetry 来安装管理依赖
-
-2、最后通过 compiler.ps1 来编译项目。
-
-## 使用
-
-Windows客户端（控制端）
-（不想自己编译，就下载这个USB-KVM.exe文件）
-1，第一次使用可能需要安装CH340的驱动。 参照官方说明安装。 
-[官网驱动安装指导视频](https://www.wch.cn/videos/ch340.html)
-如果安装成功可以在 设备管理器 中看到 COM端口号
-
-【设别管理器 COM端口号】
-
-![image](https://github.com/binnehot/KVM-over-USB/blob/main/image/2_COM_port.png)
-
-
-2，配置COM端口。
-默认端口COM5，如果需要更改端口，请参考图片
-
-![image](https://github.com/wevsty/KVM-over-USB/blob/cleanup/image/3.1_COM_setting.png)
-![image](https://github.com/wevsty/KVM-over-USB/blob/cleanup/image/3.2_COM_setting.png)
-
-
-服务端（被控制端）
-HDMI和USB，即插即用，不用安装驱动，不挑操作系统，BIOS设置也支持。
-注意：UI中MCU重置功能已经进行简单实现，RGB灯功能，暂时未有实现。
-
-【应用例子，修改BIOS设定】
-
-![image](https://github.com/binnehot/KVM-over-USB/blob/main/image/4_BIOS_Gif.gif)
-
-### 已知问题
-
-~~1.  键盘打字快了会出现重复字符，可以试一试用一个手指头打字，慢一点，或者等原作者优化原来的项目~~
-
-~~2.  鼠标移动和点击有点慢，需要练习和技巧，这也需要原作者优化原来的项目，或者接一个无线鼠标~~
-
-以上问题已经修复
-
-## 感谢
-特别感谢 [ElluIFX](https://github.com/ElluIFX)，如果有时间的话，期待键盘打字优化一轮，再次感谢。 
+[binnehot](https://github.com/binnehot)/[KVM-over-USB](https://github.com/binnehot/KVM-over-USB)
