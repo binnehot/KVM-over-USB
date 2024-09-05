@@ -4,19 +4,18 @@ import os
 import random
 import sys
 import threading
-import time
 from typing import List
 
 import yaml
 from ch9329 import keyboard
 from ch9329 import mouse
+from ch9329.config import get_product
 from ch9329.keyboard import Modifier
 from loguru import logger
 from serial import Serial
 from serial import SerialException
-from ch9329.config import get_product
 
-__DEBUG__ = False
+
 SELF_PATH = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -37,8 +36,8 @@ class Ch9329AttachFunction:
         # len(keys) <= 6
         else:
             while len(press_keys) != 6:
-                press_keys.append('')
-        logger.debug(f'press_keys {press_keys}, {press_modifiers}')
+                press_keys.append("")
+        logger.debug(f"press_keys {press_keys}, {press_modifiers}")
         keyboard.send(
             ser, (
                 press_keys[0], press_keys[1], press_keys[2], press_keys[3],
@@ -50,15 +49,15 @@ class Ch9329AttachFunction:
 class ControllerCh9329:
 
     def __init__(
-            self, controller_port: str = 'COM1',
+            self, controller_port: str = "COM1",
             baud: int = 9600, screen_x: int = 1920,
             screen_y: int = 1080
     ):
         self.connection_mutex: threading.Lock = threading.Lock()
         self.serial_connection: Serial | None = None
         self.code2key_path = os.path.join(
-            SELF_PATH, 'data',
-            'keyboard_ch9329_code2key.yaml'
+            SELF_PATH, "data",
+            "keyboard_ch9329_code2key.yaml"
         )
         self.ch9329_code2key: dict = {}
         self.press_key_map: dict = {}
@@ -76,7 +75,7 @@ class ControllerCh9329:
         return self.controller_port, self.baud, self.screen_x, self.screen_y
 
     def set_connection_params(
-            self, controller_port: str = 'COM1',
+            self, controller_port: str = "COM1",
             baud: int = 9600, screen_x: int = 1920,
             screen_y: int = 1080
     ):
@@ -87,20 +86,20 @@ class ControllerCh9329:
 
     def load_hid_code_key(self, file_path: str):
         try:
-            with open(file_path, 'r', encoding='utf-8') as load_f:
+            with open(file_path, "r", encoding="utf-8") as load_f:
                 self.ch9329_code2key = yaml.safe_load(load_f)
-                # logger.debug('load ch9329_code2key succeed')
+                # logger.debug("load ch9329_code2key succeed")
         except FileNotFoundError:
-            logger.debug('load ch9329_code2key failed')
+            logger.debug("load ch9329_code2key failed")
             sys.exit(1)
 
     def create_connection(self) -> bool:
         logger.debug(
-            f'init_connection({self.controller_port}, {self.baud}, '
-            f'{self.screen_x}, {self.screen_y})'
+            f"init_connection({self.controller_port}, {self.baud}, "
+            f"{self.screen_x}, {self.screen_y})"
         )
         connection_created: bool = False
-        if self.controller_port == '':
+        if self.controller_port == "":
             return connection_created
         self.close_connection()
         with self.connection_mutex:
@@ -111,9 +110,9 @@ class ControllerCh9329:
                     timeout=self.timeout
                 )
                 connection_created = True
-                logger.debug(f'init_connection succeed')
+                logger.debug(f"init_connection succeed")
             except SerialException:
-                logger.debug(f'init_connection failed')
+                logger.debug(f"init_connection failed")
                 self.serial_connection = None
         return connection_created
 
@@ -131,7 +130,7 @@ class ControllerCh9329:
             self.serial_connection = None
 
     def reset_connection(self):
-        logger.debug(f'reset_connection')
+        logger.debug(f"reset_connection")
         self.press_key_map.clear()
         self.close_connection()
         self.create_connection()
@@ -140,7 +139,7 @@ class ControllerCh9329:
         return random.uniform(self.min_interval, self.max_interval)
 
     def product_info(self) -> str:
-        info = ''
+        info = ""
         with self.connection_mutex:
             if self.serial_connection is None:
                 return info
@@ -151,7 +150,7 @@ class ControllerCh9329:
 
     # 恢复出厂设置
     def restore_factory_settings(self):
-        cmd_restore_packet = b'\x57\xab\x00\x0c\x00\x0e'
+        cmd_restore_packet = b"\x57\xab\x00\x0c\x00\x0e"
         with self.connection_mutex:
             if self.serial_connection is None:
                 return False
@@ -161,7 +160,7 @@ class ControllerCh9329:
 
     # 复位芯片
     def reset_controller(self):
-        cmd_reset_packet = b'\x57\xab\x00\x0f\x00\x11'
+        cmd_reset_packet = b"\x57\xab\x00\x0f\x00\x11"
         with self.connection_mutex:
             if self.serial_connection is None:
                 return False
@@ -187,13 +186,13 @@ class ControllerCh9329:
             self,
             code: int
     ) -> str:
-        string_key: str = '0x{:02x}'.format(code)
+        string_key: str = "0x{:02x}".format(code)
         ch9329_key: str | None = self.ch9329_code2key.get(
             string_key,
             None
         )
         if ch9329_key is None:
-            ch9329_key = ''
+            ch9329_key = ""
         return ch9329_key
 
     def keyboard_keys_trigger(self, keys: list, function_keys: list):
@@ -206,7 +205,7 @@ class ControllerCh9329:
                 self.serial_connection,
                 keys, function_keys
             )
-            logger.debug(f'keyboard keys press : {keys}')
+            logger.debug(f"keyboard keys press : {keys}")
         return True
 
     def keyboard_light_status(self):
@@ -217,31 +216,31 @@ class ControllerCh9329:
                 return status, keyboard_light_status
             if self.serial_connection.is_open is False:
                 return status, keyboard_light_status
-            cmd_get_info_packet = b'\x57\xab\x00\x01\x00\x03'
+            cmd_get_info_packet = b"\x57\xab\x00\x01\x00\x03"
             __clear_buffer__: bytes = self.serial_connection.readall()
             self.serial_connection.write(cmd_get_info_packet)
             buffer: bytes = self.serial_connection.readall()
             if len(buffer) == 14:
                 keyboard_light_status = buffer[7]
                 status = True
-            logger.debug(f'keyboard status 0x{keyboard_light_status:02x}')
+            logger.debug(f"keyboard status 0x{keyboard_light_status:02x}")
             return status, keyboard_light_status
 
-    def release(self, device_type: str = 'all'):
-        if device_type == 'mouse':
+    def release(self, device_type: str = "all"):
+        if device_type == "mouse":
             mouse.release(self.serial_connection)
-        elif device_type == 'keyboard':
+        elif device_type == "keyboard":
             keyboard.release(self.serial_connection)
-        elif device_type == 'all':
+        elif device_type == "all":
             mouse.release(self.serial_connection)
             keyboard.release(self.serial_connection)
         else:
-            logger.debug(f'unknown device type: {device_type}')
+            logger.debug(f"unknown device type: {device_type}")
 
 
 class Controller(ControllerCh9329):
     pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pass

@@ -1,11 +1,11 @@
 import argparse
+import ctypes
 import os
+import platform
 import re
 import sys
 import tempfile
 import time
-import ctypes
-import platform
 from typing import Tuple
 
 # from PySide6 import *
@@ -44,21 +44,21 @@ mouse_buffer_rel = [7, 0, 0, 0, 0, 0, 0, 0, 0]
 shift_symbol = [
     ")", "!", "@", "#", "$", "%",
     "^", "&", "*", "(", "~", "_",
-    "+", "{", "}", "|", ":", '"',
+    "+", "{", "}", "|", ":", "\"",
     "<", ">", "?",
 ]  # fmt: skip
 
 
 def create_default_config_file():
     if not os.path.exists(os.path.join(ARGV_PATH, "config.yaml")):
-        with open(os.path.join(ARGV_PATH, "config.yaml"), "w", encoding='utf-8') as f:
+        with open(os.path.join(ARGV_PATH, "config.yaml"), "w", encoding="utf-8") as f:
             f.write(default_config)
 
 
 def load_config_file():
     global config
     global translation
-    with open(os.path.join(ARGV_PATH, "config.yaml"), "r", encoding='utf-8') as load_f:
+    with open(os.path.join(ARGV_PATH, "config.yaml"), "r", encoding="utf-8") as load_f:
         config = yaml.safe_load(load_f)["config"]
         translation = config["translation"]
 
@@ -295,23 +295,23 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
         # 导入外部数据
         try:
             with open(
-                    os.path.join(PATH, "data", "keyboard_hid2code.yaml"), "r", encoding='utf-8'
+                    os.path.join(PATH, "data", "keyboard_hid2code.yaml"), "r", encoding="utf-8"
             ) as load_f:
                 self.keyboard_hid2code = yaml.safe_load(load_f)
             with open(
-                    os.path.join(PATH, "data", "keyboard_scancode2hid.yml"), "r", encoding='utf-8'
+                    os.path.join(PATH, "data", "keyboard_scancode2hid.yml"), "r", encoding="utf-8"
             ) as load_f:
                 self.keyboard_scancode2hid = yaml.safe_load(load_f)
-            with open(os.path.join(PATH, "data", "keyboard.yaml"), "r", encoding='utf-8') as load_f:
+            with open(os.path.join(PATH, "data", "keyboard.yaml"), "r", encoding="utf-8") as load_f:
                 self.keyboard_code = yaml.safe_load(load_f)
-            with open(os.path.join(ARGV_PATH, "config.yaml"), "r", encoding='utf-8') as load_f:
+            with open(os.path.join(ARGV_PATH, "config.yaml"), "r", encoding="utf-8") as load_f:
                 self.configfile = yaml.safe_load(load_f)
             self.config = self.configfile["config"]
             self.video_record_config = self.configfile["video_record_config"]
             self.video_config = self.configfile["video_config"]
             self.audio_config = self.configfile["audio_config"]
             self.controller_config = self.configfile["controller_config"]
-            self.fullscreen_key = getattr(Qt.Key, f'Key_{self.config["fullscreen_key"]}')
+            self.fullscreen_key = getattr(Qt.Key, f"Key_{self.config["fullscreen_key"]}")
             self.relative_mouse_speed = self.config["relative_mouse_speed"]
             if self.config["mouse_report_freq"] != 0:
                 self.mouse_report_interval = 1000 / self.config["mouse_report_freq"]
@@ -1121,7 +1121,7 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             self.disconnect_label.hide()
             self.videoWidget.show()
             self.setWindowTitle(
-                f"USB KVM Client - {self.video_config['resolution_X']}x{self.video_config['resolution_Y']} @ {fps:.1f}"
+                f"USB KVM Client - {self.video_config["resolution_X"]}x{self.video_config["resolution_Y"]} @ {fps:.1f}"
             )
             if self.dynamic_mouse_report_interval:
                 self.mouse_report_interval = 1000 / fps
@@ -1834,9 +1834,9 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
                 f" | xxd -r -p >> ./{os.path.basename(self.paste_board_file_path)}\n"
             )
         else:
-            CMD_HEAD = 'echo -e -n "'
-            CMD_TAIL0 = f'" > ./{os.path.basename(self.paste_board_file_path)}\n'
-            CMD_TAIL1 = f'" >> ./{os.path.basename(self.paste_board_file_path)}\n'
+            CMD_HEAD = "echo -e -n \""
+            CMD_TAIL0 = f"\" > ./{os.path.basename(self.paste_board_file_path)}\n"
+            CMD_TAIL1 = f"\" >> ./{os.path.basename(self.paste_board_file_path)}\n"
         with open(self.paste_board_file_path, "rb") as f:
             data = f.read()
         data = data.hex()
@@ -1921,10 +1921,10 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
                 alert.setWindowTitle(self.tr("Fullscreen"))
                 alert.setText(
                     self.tr("Press Ctrl+Alt+")
-                    + f"{self.config['fullscreen_key']} "
+                    + f"{self.config["fullscreen_key"]} "
                     + self.tr("to toggle fullscreen")
                     + self.tr("\n(Key ")
-                    + f"{self.config['fullscreen_key']} "
+                    + f"{self.config["fullscreen_key"]} "
                     + self.tr("can be changed in config.yaml)")
                     + self.tr("\nStay cursor at left top corner to show toolbar")
                 )
@@ -2410,10 +2410,10 @@ def debug_mode(mode: bool):
 
 
 def command_line_parser():
-    parser = argparse.ArgumentParser(description='USB KVM Client')
-    parser.add_argument('-d', '--debug', action='store_true',
+    parser = argparse.ArgumentParser(description="USB KVM Client")
+    parser.add_argument("-d", "--debug", action="store_true",
                         default=False,
-                        help='Debug mode (default: disable)')
+                        help="Debug mode (default: disable)")
 
     args = parser.parse_args()
     debug_mode(args.debug)
@@ -2421,8 +2421,8 @@ def command_line_parser():
 
 def os_init():
     system_name = platform.system().lower()
-    if system_name == "windows":  # sys.platform == 'win32':
-        app_id = 'open_source_software.usb_kvm_client.gui.1'
+    if system_name == "windows":  # sys.platform == "win32":
+        app_id = "open_source_software.usb_kvm_client.gui.1"
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(app_id)
     elif system_name == "linux":
         pass
@@ -2439,7 +2439,7 @@ def main():
     app = QApplication(argv)
     locale = QLocale().system().name().lower()
     translation_files: list[str] = []
-    if locale == 'zh_cn':
+    if locale == "zh_cn":
         translation_files.append(os.path.join(PATH, "translate", "qtbase_zh_cn.qm"))
         translation_files.append(os.path.join(PATH, "translate", "trans_zh_cn.qm"))
     for file_path in translation_files:

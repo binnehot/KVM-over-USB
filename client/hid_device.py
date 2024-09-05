@@ -7,7 +7,7 @@ from loguru import logger
 from controller_ch9329 import Controller
 from controller_ch9329 import Ch9329AttachFunction
 
-if os.name == "nt":  # sys.platform == 'win32':
+if os.name == "nt":  # sys.platform == "win32":
     from serial.tools.list_ports_windows import comports as list_comports
 elif os.name == "posix":
     from serial.tools.list_ports_posix import comports as list_comports
@@ -39,7 +39,7 @@ def detect_serial_ports() -> list[str]:
 # 返回非0为失败
 def init_usb(controller_port: str, baud: int = 9600, screen_x: int = 1920, screen_y: int = 1080):
     global GLOBAL_CONTROLLER
-    if controller_port == 'auto':
+    if controller_port == "auto":
         # 检测com端口
         ports: list[str] = detect_serial_ports()
         if len(ports) > 0:
@@ -95,7 +95,7 @@ def hid_event(buffer: list, read_mode: bool = False):
             # GLOBAL_CONTROLLER.reset_controller()
         case 5:
             if ((buffer[5] == 30) | (buffer[3] == 30)) & (buffer[4] == 30):
-                GLOBAL_CONTROLLER.release('all')
+                GLOBAL_CONTROLLER.release("all")
             else:
                 if DebugOutputOptions.DEVICE:
                     logger.debug("reset keyboard and mouse code error")
@@ -129,19 +129,19 @@ def hid_keyboard_key_event(buffer):
 
 def hid_keyboard_key_button_event(buffer):
     if DebugOutputOptions.KEYBOARD:
-        byte_as_hex = [hex(x).split('x')[-1] for x in list(buffer)]
+        byte_as_hex = [hex(x).split("x")[-1] for x in list(buffer)]
         logger.debug(f"buffer : {byte_as_hex}")
     function_keys = []
     if buffer[3] != 0:
         # 存在组合键
         if (buffer[3] & 1) or (buffer[3] & 16):
-            function_keys.append('ctrl')
+            function_keys.append("ctrl")
         if (buffer[3] & 2) or (buffer[3] & 32):
-            function_keys.append('shift')
+            function_keys.append("shift")
         if (buffer[3] & 4) or (buffer[3] & 64):
-            function_keys.append('alt')
+            function_keys.append("alt")
         if (buffer[3] & 8) or (buffer[3] & 128):
-            function_keys.append('win')
+            function_keys.append("win")
     keys: list = list()
     for i in range(5, len(buffer)):
         hid_key_code = buffer[i]
@@ -193,13 +193,13 @@ def hid_mouse_send_absolute_data(buffer):
         wheel = 0
 
     if buffer[3] == 0:
-        GLOBAL_CONTROLLER.mouse_send_data('null', xx, yy, wheel, False)
+        GLOBAL_CONTROLLER.mouse_send_data("null", xx, yy, wheel, False)
     elif buffer[3] == 1:
-        GLOBAL_CONTROLLER.mouse_send_data('left', xx, yy, wheel, False)
+        GLOBAL_CONTROLLER.mouse_send_data("left", xx, yy, wheel, False)
     elif buffer[3] == 2:
-        GLOBAL_CONTROLLER.mouse_send_data('right', xx, yy, wheel, False)
+        GLOBAL_CONTROLLER.mouse_send_data("right", xx, yy, wheel, False)
     elif buffer[3] == 4:
-        GLOBAL_CONTROLLER.mouse_send_data('center', xx, yy, wheel, False)
+        GLOBAL_CONTROLLER.mouse_send_data("center", xx, yy, wheel, False)
     else:
         if DebugOutputOptions.MOUSE:
             logger.debug(f"unknown mouse button {buffer[3]}")
@@ -214,13 +214,13 @@ def hid_mouse_send_relative_data(buffer):
     x -= 0xFF if x > 127 else 0
     y -= 0xFF if y > 127 else 0
 
-    '''
+    """
     # 加速移动鼠标需要放大坐标
     if -128 <= x * 2 <= 127:
         x = x * 2
     if -128 <= y * 2 <= 127:
         y = y * 2
-    '''
+    """
 
     assert -128 <= x <= 127
     assert -128 <= y <= 127
@@ -236,13 +236,13 @@ def hid_mouse_send_relative_data(buffer):
         wheel = 0
 
     if buffer[3] == 0:
-        GLOBAL_CONTROLLER.mouse_send_data('null', x, y, wheel, True)
+        GLOBAL_CONTROLLER.mouse_send_data("null", x, y, wheel, True)
     elif buffer[3] == 1:
-        GLOBAL_CONTROLLER.mouse_send_data('left', x, y, wheel, True)
+        GLOBAL_CONTROLLER.mouse_send_data("left", x, y, wheel, True)
     elif buffer[3] == 2:
-        GLOBAL_CONTROLLER.mouse_send_data('right', x, y, wheel, True)
+        GLOBAL_CONTROLLER.mouse_send_data("right", x, y, wheel, True)
     elif buffer[3] == 4:
-        GLOBAL_CONTROLLER.mouse_send_data('center', x, y, wheel, True)
+        GLOBAL_CONTROLLER.mouse_send_data("center", x, y, wheel, True)
     else:
         if DebugOutputOptions.MOUSE:
             logger.debug(f"unknown mouse button {buffer[3]}")
