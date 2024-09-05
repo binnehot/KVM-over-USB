@@ -1482,6 +1482,9 @@ class MyMainWindow(QMainWindow, main_ui.Ui_MainWindow):
             self.statusbar_icon2.setPixmap(load_pixmap("keyboard"))
             self.device_connected = True
             self.check_device_timer.start(1000)
+            self.statusBar().showMessage(
+                self.tr("Keyboard Mouse connect ok")
+            )
         elif s == "video_ok":
             self.statusBar().showMessage(self.tr("Video device connected"))
             self.statusbar_icon1.setPixmap(load_pixmap("video"))
