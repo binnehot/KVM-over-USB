@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "client"
 version = "0.1.0"
-description = ""
+description = "simple USB KVM client"
 authors = ["wevsty <ty@wevs.org>"]
 readme = "README.md"
 
@@ -17,7 +17,6 @@ pywinhook = "^1.6.2"
 pyserial = "^3.5"
 ch9329 = "^1.2.7"
 nuitka = "^2.4.8"
-
 
 [build-system]
 requires = ["poetry-core"]
